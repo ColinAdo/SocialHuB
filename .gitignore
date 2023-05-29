@@ -2,3 +2,4 @@
 db.sqlite3
 core/migrations/*
 core/__pycache__/*
+socialHub/__pycache__/*
