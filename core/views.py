@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 
 from .models import Profile
 
@@ -43,3 +44,25 @@ def signup(request):
 
     context = {}
     return render(request, template, context)
+
+def signin(request):
+    template = 'core/signin.html'
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'Login successful for {username}, welcome to socialHuB!')
+            return redirect('core:home')
+        else:
+            messages.error(request, 'Invalid username or password')
+            return redirect('core:signin')
+    context = {}
+    return render(request, template, context)
+
+def signout(request):
+    logout(request)
+    messages.info(request, 'You have Just Signed-out')
+    return redirect('core:signin')

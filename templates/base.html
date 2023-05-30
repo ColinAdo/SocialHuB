@@ -7,6 +7,13 @@
     <title>SocialHuB</title>
 </head>
 <body>
+    <div>
+        {% if messages %}
+            {% for message in messages %}
+                <small>{{message}}</small>
+            {% endfor %}
+        {% endif %} 
+    </div>
 
     {% block content %}
         
