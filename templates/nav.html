@@ -1,0 +1,18 @@
+{% load static %}
+<div>
+    <p>
+        <h2> <a href= "{% url 'core:home' %}">Logo</a></h2>
+        {% if request.user.is_authenticated %} 
+        <form action="#" method="POST">
+            {% csrf_token %}
+            <input type="text" name="user" placeholder="Search for a user...." required>
+            <button type="submit">Search</button>
+        </form>
+        <a href="#">Create Post</a>
+        <a href="#">Profile</a>
+        <a href="#">Settings</a>
+        <a href="{% url 'core:signout' %}">Logout</a>
+        {% endif %} 
+    </p>
+    <hr>
+</div>
