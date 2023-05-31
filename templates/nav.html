@@ -10,7 +10,7 @@
         </form>
         <a href="#">Create Post</a>
         <a href="#">Profile</a>
-        <a href="#">Settings</a>
+        <a href="{% url 'core:settings' %}">Settings</a>
         <a href="{% url 'core:signout' %}">Logout</a>
         {% endif %} 
     </p>

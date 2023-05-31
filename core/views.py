@@ -66,3 +66,34 @@ def signout(request):
     logout(request)
     messages.info(request, 'You have Just Signed-out')
     return redirect('core:signin')
+
+def settings(request):
+    template = 'core/settings.html'
+    user = request.user
+    user_profile = Profile.objects.get(user=user)
+    if request.method == 'POST':
+        if request.FILES.get('image') is None:
+            bio = request.POST['bio']
+            image = user_profile.image
+            location = request.POST['location']
+
+            user_profile.bio = bio
+            user_profile.location = location
+            user_profile.save()
+            messages.success(request, 'Settings updated successfully')
+            return redirect('core:settings')
+        else:
+            image = request.FILES['image']
+            bio = request.POST['bio']
+            location = request.POST['location']
+
+            user_profile.bio = bio
+            user_profile.image = image
+            user_profile.location = location
+            user_profile.save()
+            messages.success(request, 'Settings updated successfully')
+            return redirect('core:settings')
+    context = {
+        'user_profile': user_profile
+    }
+    return render(request, template, context)
