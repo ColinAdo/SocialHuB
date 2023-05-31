@@ -9,4 +9,5 @@ urlpatterns = [
     path('signout/', views.signout, name='signout'),
 
     path('settings/', views.settings, name='settings'),
+    path('uploadpost/', views.uploadpost, name='uploadpost'),
 ]

@@ -2,4 +2,14 @@
 
 {% block content %}
     <h1>Hello, World from template Inheritance!</h1>
+    {% for post in posts %}
+        <p><a href="#">@{{post.author}}</a></p>
+        <a href="{{post.image.url}}"><img src="{{post.image.url}}" alt="post" width="300" height="300"></a>
+        <p>
+            <a href="#">Like</a> No Likes 
+            <a href="{{post.image.url}}" download>Download</a>
+        </p>
+        <p>Posted by <a href="#">{{ post.author }}</a> on {{ post.date_posted }}</p>
+        <p>{{ post.caption }}</p>
+    {% endfor %}
 {% endblock content %}

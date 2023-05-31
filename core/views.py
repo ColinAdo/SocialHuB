@@ -3,13 +3,16 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
-from .models import Profile
+from .models import Profile, Post
 
 
 def home(request):
     template = 'core/index.html'
+    posts = Post.objects.all()
     
-    context = {}
+    context = {
+        'posts': posts,
+    }
     return render(request, template, context)
 
 
@@ -96,4 +99,20 @@ def settings(request):
     context = {
         'user_profile': user_profile
     }
+    return render(request, template, context)
+
+def uploadpost(request):
+    template = 'core/uploadpost.html'
+    user = request.user
+
+    if request.method == 'POST':
+        author = User.objects.get(username=user)
+        image = request.FILES.get('image')
+        caption = request.POST['caption']
+
+        new_post = Post.objects.create(author=author, image=image, caption=caption)
+        new_post.save()
+        messages.success(request, 'You have posted successfully')
+        return redirect('core:home')
+    context = {}
     return render(request, template, context)
