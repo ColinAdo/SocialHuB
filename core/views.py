@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
-from .models import Profile, Post
+from .models import Profile, Post, LikePost
 
 
 def home(request):
@@ -116,3 +116,25 @@ def uploadpost(request):
         return redirect('core:home')
     context = {}
     return render(request, template, context)
+
+def likePost(request):
+    logged_in_user = request.user
+    user = User.objects.get(username=logged_in_user)
+    post_id = request.GET.get('post_id')
+
+    post = Post.objects.get(id=post_id)
+    filter_likes = LikePost.objects.filter(post_id=post, user=user).first()
+
+    if filter_likes is None:
+        like = LikePost.objects.create(post_id=post, user=user)
+        like.save()
+
+        post.no_of_likes = post.no_of_likes + 1
+        post.save()
+    else:
+        filter_likes.delete()
+
+        post.no_of_likes = post.no_of_likes - 1
+        post.save()
+    prev_url = request.META.get('HTTP_REFERER')
+    return redirect(prev_url)
