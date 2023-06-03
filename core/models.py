@@ -27,3 +27,13 @@ class Post(models.Model):
 class LikePost(models.Model):
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.post_id} likes"
+    
+class FollowUnFollow(models.Model):
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    user_being_followed = models.ForeignKey(User, related_name="followers", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user_being_followed} followers"

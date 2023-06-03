@@ -11,6 +11,27 @@
     {% endif %}
 
     <div>
+        <form action="{% url 'core:followunfollow' %}" method="POST">
+            {% csrf_token %}
+            {% if request.user.username != user_profile.user.username %}
+                <input type="hidden" value="{{request.user.username}}" name="follower">
+                <input type="hidden" value="{{user_profile.user.username}}" name="user_being_followed">
+                {% if following %}
+                    <button type="submit">Unfollow</button>
+                {% else %}
+                    <button type="submit">Follow</button>
+                {% endif %}
+            {% endif %}
+        </form>
+        <p>
+            {{followers_count}} <a href="#"> Follower{{followers_count|pluralize}}</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {{following_count}} <a href="#"> Following{{following_count|pluralize}}</a> &nbsp;&nbsp;
+            {{posts.count}} Post{{posts.count|pluralize}}
+        </p>
+    </div>
+
+    <div>
         {% for post in posts %}
         <a href="{{post.image.url}}"><img src="{{post.image.url}}" alt="post" width="300" height="300"></a>
         

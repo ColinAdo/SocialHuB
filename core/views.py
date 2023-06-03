@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseBadRequest
 
-from .models import Profile, Post, LikePost
+from .models import Profile, Post, LikePost, FollowUnFollow
 
 
 def home(request):
@@ -141,13 +142,41 @@ def likePost(request):
 
 def profile(request, username):
     template = 'core/profile.html'
+    logged_in_user = request.user
 
     author = User.objects.get(username=username)
     posts = Post.objects.filter(author=author).order_by('-date_posted')
     user_profile = Profile.objects.get(user=author)
 
+    following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
+    followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
+    following_count = FollowUnFollow.objects.filter(follower=author).count()
+
     context = {
         'posts': posts,
-        'user_profile': user_profile
+        'user_profile': user_profile,
+        'following': following,
+        'followers_count': followers_count,
+        'following_count': following_count
     }
     return render(request, template, context)
+
+def followunfollow(request):
+    logged_in_user = request.user
+    if request.method == 'POST':
+        follower_username = request.POST['follower']
+        username_of_user_being_followed = request.POST['user_being_followed']
+
+        if not follower_username or not username_of_user_being_followed:
+            return HttpResponseBadRequest("Missing parameters")
+
+        user_being_followed = User.objects.get(username=username_of_user_being_followed)
+        followers_filter = FollowUnFollow.objects.filter(
+            follower=logged_in_user, user_being_followed=user_being_followed).first()
+        
+        if followers_filter:
+            followers_filter.delete()
+        else:
+            FollowUnFollow.objects.create(follower=logged_in_user, user_being_followed=user_being_followed)
+    prev_url = request.META.get('HTTP_REFERER')
+    return redirect(prev_url)
