@@ -9,7 +9,7 @@
             <button type="submit">Search</button>
         </form>
         <a href="{% url 'core:uploadpost' %}">Create Post</a>
-        <a href="#">Profile</a>
+        <a href="{% url 'core:profile' request.user %}">Profile</a>
         <a href="{% url 'core:settings' %}">Settings</a>
         <a href="{% url 'core:signout' %}">Logout</a>
         {% endif %} 

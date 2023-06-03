@@ -138,3 +138,16 @@ def likePost(request):
         post.save()
     prev_url = request.META.get('HTTP_REFERER')
     return redirect(prev_url)
+
+def profile(request, username):
+    template = 'core/profile.html'
+
+    author = User.objects.get(username=username)
+    posts = Post.objects.filter(author=author).order_by('-date_posted')
+    user_profile = Profile.objects.get(user=author)
+
+    context = {
+        'posts': posts,
+        'user_profile': user_profile
+    }
+    return render(request, template, context)
