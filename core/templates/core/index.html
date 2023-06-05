@@ -25,4 +25,16 @@
         <p>Posted by <a href="{% url 'core:profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
         <p>{{ post.caption }}</p>
     {% endfor %}
+        
+    {% if suggested_users %}
+        <h3>Suggested Users To Follow</h3>
+        {% for user, profile in suggested_users %}
+            <td>
+                <p><a href="{{ profile.image.url }}"><img src="{{ profile.image.url }}" alt="" width="300" height="300"></a>
+            
+                <strong>Username: </strong><a href="{% url 'core:profile' profile.user %}">@{{ profile.user }}</a></p>
+                
+            </td>
+        {% endfor %}
+    {% endif %}
 {% endblock content %}
