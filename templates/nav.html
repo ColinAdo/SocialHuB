@@ -3,7 +3,7 @@
     <p>
         <h2> <a href= "{% url 'core:home' %}">Logo</a></h2>
         {% if request.user.is_authenticated %} 
-        <form action="#" method="POST">
+        <form action="{% url 'core:search' %}" method="GET">
             {% csrf_token %}
             <input type="text" name="user" placeholder="Search for a user...." required>
             <button type="submit">Search</button>

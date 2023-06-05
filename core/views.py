@@ -180,3 +180,22 @@ def followunfollow(request):
             FollowUnFollow.objects.create(follower=logged_in_user, user_being_followed=user_being_followed)
     prev_url = request.META.get('HTTP_REFERER')
     return redirect(prev_url)
+
+def search(request):
+    template = 'core/search.html'
+    search = request.GET.get('user') if request.GET.get('user') != None else ''
+
+    user_profiles = None
+
+    if search:
+        users = User.objects.filter(username__icontains=search)
+        user_profiles = Profile.objects.filter(user__in=users)
+
+        if not users:
+            messages.info(request, f'No result for the {search}')
+
+    context = {
+        'search': search,
+        'user_profiles': user_profiles,
+    }
+    return render(request, template, context)

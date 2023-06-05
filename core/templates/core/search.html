@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <h4>
+            Results for {{search}}
+        </h4>
+      
+        <table>
+            <tr>
+                {% if user_profiles %}
+                    {% for profile in user_profiles %}
+                        <td><a href="{{ profile.image.url }}"><img src="{{ profile.image.url }}" alt="" width="300" height="300"></a></td>
+                        <td>
+                            <p><strong>Username: </strong><a href="{% url 'core:profile' profile.user %}">@{{ profile.user }}</a></p>
+                        </td>
+                    {% endfor %}
+                {% endif %}
+            </tr>
+        </table>
+    </div>
+{% endblock content %}
