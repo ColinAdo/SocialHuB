@@ -3,16 +3,33 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest
+from django.db.models import Q
 
 from .models import Profile, Post, LikePost, FollowUnFollow
 
+import random
 
 def home(request):
     template = 'core/index.html'
-    posts = Post.objects.all()
-    
+    logged_in_user = request.user
+
+    # Getting posts of the logged in user and their followers
+    followers = FollowUnFollow.objects.filter(follower=logged_in_user)
+    user_being_followed = [f.user_being_followed for f in followers]
+    posts = Post.objects.filter(
+        Q(author=logged_in_user) | Q(author__in=user_being_followed)
+    ).order_by('-date_posted')
+
+    # Getting suggested users
+    suggested_users = User.objects.exclude(pk=logged_in_user.pk).exclude(followers__follower=logged_in_user)
+    suggested_users = list(suggested_users) 
+    random.shuffle(suggested_users) 
+    suggested_users = suggested_users[:2]
+    suggested_users_profiles = Profile.objects.filter(user__in=suggested_users)
+
     context = {
         'posts': posts,
+        'suggested_users': zip(suggested_users, suggested_users_profiles)
     }
     return render(request, template, context)
 
@@ -180,3 +197,22 @@ def followunfollow(request):
             FollowUnFollow.objects.create(follower=logged_in_user, user_being_followed=user_being_followed)
     prev_url = request.META.get('HTTP_REFERER')
     return redirect(prev_url)
+
+def search(request):
+    template = 'core/search.html'
+    search = request.GET.get('user') if request.GET.get('user') != None else ''
+
+    user_profiles = None
+
+    if search:
+        users = User.objects.filter(username__icontains=search)
+        user_profiles = Profile.objects.filter(user__in=users)
+
+        if not users:
+            messages.info(request, f'No result for the {search}')
+
+    context = {
+        'search': search,
+        'user_profiles': user_profiles,
+    }
+    return render(request, template, context)
