@@ -24,6 +24,24 @@
         {% endif %}
         <p>Posted by <a href="{% url 'profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
         <p>{{ post.caption }}</p>
+
+    {% with latest_comment=post.comment_set.latest %}
+        {% if latest_comment %}
+            <p>
+                <a href="{% url 'comment' post.id %}">
+                    {{ latest_comment.content }}
+                </a>
+            </p>
+            {% if post.comment_set.count > 1 %}
+                <p>
+                    <a href="{% url 'comment' post.id %}">
+                        view {{ post.comment_set.count|add:"-1" }} more comments
+                    </a>
+                </p>
+            {% endif %}
+        {% endif %}
+    {% endwith %}
+        <p><a href="{% url 'comment' post.id %}">Comment</a></p>
     {% endfor %}
         
     {% if suggested_users %}

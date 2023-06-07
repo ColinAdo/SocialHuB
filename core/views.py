@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest
 from django.db.models import Q
 
-from .models import Profile, Post, LikePost, FollowUnFollow
+from .models import Profile, Post, LikePost, FollowUnFollow, Comment
 
 import random
 
@@ -214,5 +214,25 @@ def search(request):
     context = {
         'search': search,
         'user_profiles': user_profiles,
+    }
+    return render(request, template, context)
+
+def comments(request, pk):
+    template = 'core/comments.html'
+    logged_in_user = request.user
+
+    post = Post.objects.get(id=pk)
+    comments = post.comment_set.all()
+    # users = User.objects.all()
+    if request.method == 'POST':
+        comment = Comment.objects.create(
+            user=logged_in_user,
+            post=post,
+            content=request.POST.get('content')
+        )
+        return redirect('comment', pk=post.id)
+
+    context = {
+        'comments': comments,
     }
     return render(request, template, context)

@@ -5,7 +5,7 @@ from django.utils import timezone
 import uuid
 
 class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=200)
     image = models.ImageField(default='default.png', upload_to='profile_pics')
     location = models.CharField(max_length=200)
@@ -37,3 +37,15 @@ class FollowUnFollow(models.Model):
 
     def __str__(self):
         return f"{self.user_being_followed} followers"
+    
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    content = models.TextField()
+    date_posted = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        get_latest_by = 'date_posted'
+
+    def __str__(self):
+        return f'{self.post.author} comments'
