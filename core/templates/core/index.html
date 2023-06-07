@@ -3,26 +3,26 @@
 {% block content %}
     <h1>Hello, World from template Inheritance!</h1>
     {% for post in posts %}
-        <p><a href="{% url 'core:profile' post.author %}">@{{post.author}}</a></p>
+        <p><a href="{% url 'profile' post.author %}">@{{post.author}}</a></p>
         <a href="{{post.image.url}}"><img src="{{post.image.url}}" alt="post" width="300" height="300"></a>
         
         {% if post.no_of_likes == 0 %}
             <p>
-                <a href="{% url 'core:likepost' %}?post_id={{post.id}}">Love</a> No Love 
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> No Love 
                 <a href="{{post.image.url}}" download>Download</a>
             </p>
         {% elif post.no_of_likes == 1 %}
             <p>
-                <a href="{% url 'core:likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} person
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} person
                 <a href="{{post.image.url}}" download>Download</a>
             </p>
         {% else %}
             <p>
-                <a href="{% url 'core:likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} people
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} people
                 <a href="{{post.image.url}}" download>Download</a>
             </p>
         {% endif %}
-        <p>Posted by <a href="{% url 'core:profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
+        <p>Posted by <a href="{% url 'profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
         <p>{{ post.caption }}</p>
     {% endfor %}
         
@@ -32,7 +32,7 @@
             <td>
                 <p><a href="{{ profile.image.url }}"><img src="{{ profile.image.url }}" alt="" width="300" height="300"></a>
             
-                <strong>Username: </strong><a href="{% url 'core:profile' profile.user %}">@{{ profile.user }}</a></p>
+                <strong>Username: </strong><a href="{% url 'profile' profile.user %}">@{{ profile.user }}</a></p>
                 
             </td>
         {% endfor %}

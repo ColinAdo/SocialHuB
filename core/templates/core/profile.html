@@ -11,7 +11,7 @@
     {% endif %}
 
     <div>
-        <form action="{% url 'core:followunfollow' %}" method="POST">
+        <form action="{% url 'followunfollow' %}" method="POST">
             {% csrf_token %}
             {% if request.user.username != user_profile.user.username %}
                 <input type="hidden" value="{{request.user.username}}" name="follower">
@@ -37,21 +37,21 @@
         
         {% if post.no_of_likes == 0 %}
             <p>
-                <a href="{% url 'core:likepost' %}?post_id={{post.id}}">Love</a> No Love 
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> No Love 
                 <a href="{{post.image.url}}" download>Download</a>
             </p>
         {% elif post.no_of_likes == 1 %}
             <p>
-                <a href="{% url 'core:likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} person
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} person
                 <a href="{{post.image.url}}" download>Download</a>
             </p>
         {% else %}
             <p>
-                <a href="{% url 'core:likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} people
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} people
                 <a href="{{post.image.url}}" download>Download</a>
             </p>
         {% endif %}
-        <p>Posted by <a href="{% url 'core:profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
+        <p>Posted by <a href="{% url 'profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
         <p>{{ post.caption }}</p>
     {% endfor %}
     </div>

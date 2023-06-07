@@ -1,17 +1,17 @@
 {% load static %}
 <div>
     <p>
-        <h2> <a href= "{% url 'core:home' %}">Logo</a></h2>
+        <h2> <a href= "{% url 'home' %}">Logo</a></h2>
         {% if request.user.is_authenticated %} 
-        <form action="{% url 'core:search' %}" method="GET">
+        <form action="{% url 'search' %}" method="GET">
             {% csrf_token %}
             <input type="text" name="user" placeholder="Search for a user...." required>
             <button type="submit">Search</button>
         </form>
-        <a href="{% url 'core:uploadpost' %}">Create Post</a>
-        <a href="{% url 'core:profile' request.user %}">Profile</a>
-        <a href="{% url 'core:settings' %}">Settings</a>
-        <a href="{% url 'core:signout' %}">Logout</a>
+        <a href="{% url 'uploadpost' %}">Create Post</a>
+        <a href="{% url 'profile' request.user %}">Profile</a>
+        <a href="{% url 'settings' %}">Settings</a>
+        <a href="{% url 'signout' %}">Logout</a>
         {% endif %} 
     </p>
     <hr>

@@ -46,10 +46,10 @@ def signup(request):
         if password1 == password2:
             if User.objects.filter(email=email).exists():
                 messages.info(request, 'Email already exists')
-                return redirect('core:signup')
+                return redirect('signup')
             elif User.objects.filter(username=username).exists():
                 messages.info(request, 'Username already exists')
-                return redirect('core:signup')
+                return redirect('signup')
             else:
                 user = User.objects.create_user(username=username, email=email, password=password1)
                 user.save()
@@ -59,7 +59,7 @@ def signup(request):
                 profile = Profile.objects.create(user=new_user)
                 profile.save()
                 messages.success(request, 'User created successfully, you can now login')
-                return redirect('core:signup')
+                return redirect('signup')
         else:
             messages.info(request, 'Password mismatch')
 
@@ -76,17 +76,17 @@ def signin(request):
         if user is not None:
             login(request, user)
             messages.success(request, f'Login successful for {username}, welcome to socialHuB!')
-            return redirect('core:home')
+            return redirect('home')
         else:
             messages.error(request, 'Invalid username or password')
-            return redirect('core:signin')
+            return redirect('signin')
     context = {}
     return render(request, template, context)
 
 def signout(request):
     logout(request)
     messages.info(request, 'You have Just Signed-out')
-    return redirect('core:signin')
+    return redirect('signin')
 
 def settings(request):
     template = 'core/settings.html'
@@ -102,7 +102,7 @@ def settings(request):
             user_profile.location = location
             user_profile.save()
             messages.success(request, 'Settings updated successfully')
-            return redirect('core:settings')
+            return redirect('settings')
         else:
             image = request.FILES['image']
             bio = request.POST['bio']
@@ -113,7 +113,7 @@ def settings(request):
             user_profile.location = location
             user_profile.save()
             messages.success(request, 'Settings updated successfully')
-            return redirect('core:settings')
+            return redirect('settings')
     context = {
         'user_profile': user_profile
     }
@@ -131,7 +131,7 @@ def uploadpost(request):
         new_post = Post.objects.create(author=author, image=image, caption=caption)
         new_post.save()
         messages.success(request, 'You have posted successfully')
-        return redirect('core:home')
+        return redirect('home')
     context = {}
     return render(request, template, context)
 
