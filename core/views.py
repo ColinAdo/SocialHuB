@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest
 from django.db.models import Q
 
-from .models import Profile, Post, LikePost, FollowUnFollow, Comment
+from .models import Profile, Post, LikePost, FollowUnFollow, Comment, Message
 
 import random
 
@@ -234,5 +234,35 @@ def comments(request, pk):
 
     context = {
         'comments': comments,
+    }
+    return render(request, template, context)
+
+def send_message(request, receiver_username):
+    template = 'core/send_message.html'
+    sender = request.user
+    receiver = User.objects.get(username=receiver_username)
+
+    received_messages = Message.objects.filter(
+        Q(sender=sender) | Q(receiver=sender)).order_by('date_sent')
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        message = Message.objects.create(sender=sender, receiver=receiver, content=content)
+        return redirect('message', receiver_username)
+
+    context = {
+        'receiver': receiver,
+        'received_messages': received_messages
+    }
+    return render(request, template, context)
+
+def inbox(request):
+    template = 'core/inbox.html'
+    logged_in_user = request.user
+
+    received_messages = Message.objects.filter(receiver=logged_in_user)
+
+    context = {
+        'received_messages': received_messages,
     }
     return render(request, template, context)

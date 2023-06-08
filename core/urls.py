@@ -23,4 +23,6 @@ urlpatterns = [
     path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='core/password_reset_complete.html'), name='password_reset_complete'),
 
     path('comment/<str:pk>/', views.comments, name='comment'),
+    path('message/<str:receiver_username>/', views.send_message, name='message'),
+    path('inbox/', views.inbox, name='inbox'),
 ]

@@ -12,7 +12,7 @@
                     {% for profile in user_profiles %}
                         <td><a href="{{ profile.image.url }}"><img src="{{ profile.image.url }}" alt="" width="300" height="300"></a></td>
                         <td>
-                            <p><strong>Username: </strong><a href="{% url 'core:profile' profile.user %}">@{{ profile.user }}</a></p>
+                            <p><strong>Username: </strong><a href="{% url 'profile' profile.user %}">@{{ profile.user }}</a></p>
                         </td>
                     {% endfor %}
                 {% endif %}

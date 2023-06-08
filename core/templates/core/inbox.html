@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>Inbox</h4>
+
+    {% for message in received_messages %}
+        <div>
+            <a href="{% url 'message' message.sender.username %}"><p><img src="{{ message.sender.profile.image.url }}" width="30" height="30">message from {{ message.sender.username }} {{ message.date_sent|timesince }} ago</p></a>
+        </div>
+    {% endfor %}
+{% endblock content %}

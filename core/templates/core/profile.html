@@ -18,6 +18,7 @@
                 <input type="hidden" value="{{user_profile.user.username}}" name="user_being_followed">
                 {% if following %}
                     <button type="submit">Unfollow</button>
+                    <a href="{% url 'message' user_profile.user.username %}">Message</a>
                 {% else %}
                     <button type="submit">Follow</button>
                 {% endif %}
