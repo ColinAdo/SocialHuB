@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest
 from django.db.models import Q
 
+from django.core.paginator import Paginator
+
 from .models import Profile, Post, LikePost, FollowUnFollow, Comment, Message
 
 import random
@@ -20,6 +22,10 @@ def home(request):
         Q(author=logged_in_user) | Q(author__in=user_being_followed)
     ).order_by('-date_posted')
 
+    paginator = Paginator(posts, 2)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # Getting suggested users
     suggested_users = User.objects.exclude(pk=logged_in_user.pk).exclude(followers__follower=logged_in_user)
     suggested_users = list(suggested_users) 
@@ -28,8 +34,8 @@ def home(request):
     suggested_users_profiles = Profile.objects.filter(user__in=suggested_users)
 
     context = {
-        'posts': posts,
-        'suggested_users': zip(suggested_users, suggested_users_profiles)
+        'page_obj': page_obj,
+        'suggested_users': zip(suggested_users, suggested_users_profiles),
     }
     return render(request, template, context)
 
@@ -165,12 +171,16 @@ def profile(request, username):
     posts = Post.objects.filter(author=author).order_by('-date_posted')
     user_profile = Profile.objects.get(user=author)
 
+    paginator = Paginator(posts, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
     followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
     following_count = FollowUnFollow.objects.filter(follower=author).count()
 
     context = {
-        'posts': posts,
+        'page_obj': page_obj,
         'user_profile': user_profile,
         'following': following,
         'followers_count': followers_count,
