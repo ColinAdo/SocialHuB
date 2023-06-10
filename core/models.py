@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from PIL import Image
+
 import uuid
 
 class Profile(models.Model):
@@ -12,6 +14,16 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} profile"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        img = Image.open(self.image.path)
+
+        if img.height > 300 or img.width > 300:
+            outpu_size = (300, 300)
+            img.thumbnail(outpu_size)
+            img.save(self.image.path)
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -23,6 +35,15 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.author.username} posts"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        img = Image.open(self.image.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
     
 class LikePost(models.Model):
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
