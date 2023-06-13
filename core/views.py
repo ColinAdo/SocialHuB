@@ -169,6 +169,7 @@ def profile(request, username):
 
     author = User.objects.get(username=username)
     posts = Post.objects.filter(author=author).order_by('-date_posted')
+    posts_count = posts.count()
     user_profile = Profile.objects.get(user=author)
 
     paginator = Paginator(posts, 2)
@@ -184,7 +185,8 @@ def profile(request, username):
         'user_profile': user_profile,
         'following': following,
         'followers_count': followers_count,
-        'following_count': following_count
+        'following_count': following_count,
+        'posts_count': posts_count,
     }
     return render(request, template, context)
 
@@ -274,5 +276,41 @@ def inbox(request):
 
     context = {
         'received_messages': received_messages,
+    }
+    return render(request, template, context)
+
+def followers_list(request, username):
+    template = 'core/followers_following_list.html'
+    logged_in_user = request.user
+
+    author = User.objects.get(username=username)
+    user_profile = Profile.objects.get(user=author)
+
+    followers = FollowUnFollow.objects.filter(user_being_followed=author)
+    following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
+
+
+    context = {
+        'user_profile': user_profile,
+        'followers': followers,
+        'following': following,
+    }
+    return render(request, template, context)
+
+def following_list(request, username):
+    template = 'core/followers_following_list.html'
+    logged_in_user = request.user
+
+    author = User.objects.get(username=username)
+    user_profile = Profile.objects.get(user=author)
+
+    users_following = FollowUnFollow.objects.filter(follower=author)
+    following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
+
+
+    context = {
+        'user_profile': user_profile,
+        'users_following': users_following,
+        'following': following,
     }
     return render(request, template, context)

@@ -25,4 +25,7 @@ urlpatterns = [
     path('comment/<str:pk>/', views.comments, name='comment'),
     path('message/<str:receiver_username>/', views.send_message, name='message'),
     path('inbox/', views.inbox, name='inbox'),
+
+    path('<str:username>/followers-list/', views.followers_list, name='followers-list'),
+    path('<str:username>/following-list/', views.following_list, name='following-list'),
 ]

@@ -25,10 +25,10 @@
             {% endif %}
         </form>
         <p>
-            {{followers_count}} <a href="#"> Follower{{followers_count|pluralize}}</a>
+            {{followers_count}} <a href="{% url 'followers-list' user_profile.user.username %}"> Follower{{followers_count|pluralize}}</a>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            {{following_count}} <a href="#"> Following{{following_count|pluralize}}</a> &nbsp;&nbsp;
-            {{posts.count}} Post{{posts.count|pluralize}}
+            {{following_count}} <a href="{% url 'following-list' user_profile.user.username %}"> Following{{following_count|pluralize}}</a> &nbsp;&nbsp;
+            {{posts_count}} Post{{posts_count|pluralize}}
         </p>
     </div>
 
