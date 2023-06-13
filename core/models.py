@@ -5,6 +5,7 @@ from django.utils import timezone
 from PIL import Image
 
 import uuid
+import magic
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -28,7 +29,7 @@ class Profile(models.Model):
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='post_pics')
+    file = models.FileField(upload_to='post_pics', default='default.png')
     caption = models.CharField(max_length=200)
     date_posted = models.DateTimeField(default=timezone.now)
     no_of_likes = models.IntegerField(default=0)
@@ -39,11 +40,22 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        img = Image.open(self.image.path)
-        if img.height > 300 or img.width > 300:
-            output_size = (300, 300)
-            img.thumbnail(output_size)
-            img.save(self.image.path)
+        if self.file.path.endswith('.jpg') or self.file.path.endswith('.png'):
+            img = Image.open(self.file.path)
+            if img.height > 300 or img.width > 300:
+                output_size = (300, 300)
+                img.thumbnail(output_size)
+                img.save(self.file.path)
+
+    def get_file_type(self):
+        file_path = self.file.path
+        mime = magic.from_file(file_path, mime=True)
+        if mime.startswith('image'):
+            return 'image'
+        elif mime.startswith('video'):
+            return 'video'
+        else:
+            return 'unknown'
     
 class LikePost(models.Model):
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)

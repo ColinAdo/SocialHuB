@@ -131,10 +131,10 @@ def uploadpost(request):
 
     if request.method == 'POST':
         author = User.objects.get(username=user)
-        image = request.FILES.get('image')
+        file = request.FILES.get('image')
         caption = request.POST['caption']
 
-        new_post = Post.objects.create(author=author, image=image, caption=caption)
+        new_post = Post.objects.create(author=author, file=file, caption=caption)
         new_post.save()
         messages.success(request, 'You have posted successfully')
         return redirect('home')

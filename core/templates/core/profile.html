@@ -34,8 +34,15 @@
 
     <div>
         {% for post in page_obj %}
-        <a href="{{post.image.url}}"><img src="{{post.image.url}}" alt="post" width="300" height="300"></a>
-        
+            {% if post.get_file_type == 'image' %}
+                <a href="{{post.file.url}}"><img src="{{post.file.url}}" alt="post" width="300" height="300"></a>
+            {% elif post.get_file_type == 'video' %}
+                <video controls width="300" height="300">
+                    <source src="{{ post.file.url }}" type="video/mp4">
+                </video>
+            {% else %}
+                <p>No file uploaded or unsupported file type.</p>
+            {% endif %}
         {% if post.no_of_likes == 0 %}
             <p>
                 <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> No Love 
