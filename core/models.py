@@ -89,5 +89,8 @@ class Message(models.Model):
     content = models.TextField()
     date_sent = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        get_latest_by = 'date_sent'
+        
     def __str__(self):
-        return f"From: {self.sender.username} | To: {self.receiver.username}"
+        return f"Message From: {self.sender.username} | To: {self.receiver.username}"

@@ -272,10 +272,12 @@ def inbox(request):
     template = 'core/inbox.html'
     logged_in_user = request.user
 
-    received_messages = Message.objects.filter(receiver=logged_in_user)
+    distinct_senders = Message.objects.filter(receiver=logged_in_user).values('sender').distinct()
+    sender_ids = distinct_senders.values_list('sender', flat=True)
+    distinct_senders = User.objects.filter(id__in=sender_ids)
 
     context = {
-        'received_messages': received_messages,
+        'distinct_senders': distinct_senders,
     }
     return render(request, template, context)
 

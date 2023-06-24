@@ -1,11 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h4>Inbox</h4>
+<h4>Inbox {{distinct_senders.count}}</h4>
 
-    {% for message in received_messages %}
-        <div>
-            <a href="{% url 'message' message.sender.username %}"><p><img src="{{ message.sender.profile.image.url }}" width="30" height="30">message from {{ message.sender.username }} {{ message.date_sent|timesince }} ago</p></a>
-        </div>
-    {% endfor %}
+{% for sender in distinct_senders %}
+    {% with messages=sender.sent_messages.all %}
+        {% if messages %}
+            {% with latest_message=messages.latest %}
+                <div>
+                    <a href="{% url 'message' sender.username %}">
+                        <p>
+                            <img src="{{ sender.profile.image.url }}" width="30" height="30">
+                            {{sender.sent_messages.count}} message from {{ sender.username }} {{ latest_message.date_sent|timesince }} ago
+                        </p>
+                    </a>
+                </div>
+            {% endwith %}
+        {% endif %}
+    {% endwith %}
+{% endfor %}
+
 {% endblock content %}
