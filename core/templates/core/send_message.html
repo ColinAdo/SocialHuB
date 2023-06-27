@@ -6,7 +6,8 @@
     {% for message in received_messages %}
         {% if message.receiver.username == receiver.username or message.sender.username == receiver.username %}
             <div>
-                <p><a href="{% url 'profile' message.sender.username %}"><img src="{{ message.sender.profile.image.url }}" width="30" height="30"></a> {{ message.content }} {{ message.date_sent|timesince }} ago</p>
+                <p><a href="{% url 'profile' message.sender.username %}"><img src="{{ message.sender.profile.image.url }}" width="30" height="30"></a>
+                    {{ message.content }} {{ message.date_sent|timesince }} ago &nbsp; <a href="{% url 'deletemessage' message.id %}">Delete</a></p>
             </div>
         {% endif %}
     {% endfor %}

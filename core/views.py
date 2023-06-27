@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.db.models import Q
 
 from django.core.paginator import Paginator
@@ -39,7 +39,6 @@ def home(request):
     }
     return render(request, template, context)
 
-
 def signup(request):
     template = 'core/signup.html'
 
@@ -55,7 +54,7 @@ def signup(request):
                 return redirect('signup')
             elif User.objects.filter(username=username).exists():
                 messages.info(request, 'Username already exists')
-                return redirect('signup')
+                return redirect('signin')
             else:
                 user = User.objects.create_user(username=username, email=email, password=password1)
                 user.save()
@@ -65,7 +64,7 @@ def signup(request):
                 profile = Profile.objects.create(user=new_user)
                 profile.save()
                 messages.success(request, 'User created successfully, you can now login')
-                return redirect('signup')
+                return redirect('signin')
         else:
             messages.info(request, 'Password mismatch')
 
@@ -233,14 +232,16 @@ def comments(request, pk):
     template = 'core/comments.html'
     logged_in_user = request.user
 
+    content=request.POST.get('content')
+
     post = Post.objects.get(id=pk)
     comments = post.comment_set.all()
-    # users = User.objects.all()
+
     if request.method == 'POST':
         comment = Comment.objects.create(
             user=logged_in_user,
             post=post,
-            content=request.POST.get('content')
+            content=content
         )
         return redirect('comment', pk=post.id)
 
@@ -314,5 +315,67 @@ def following_list(request, username):
         'user_profile': user_profile,
         'users_following': users_following,
         'following': following,
+    }
+    return render(request, template, context)
+
+def deletepost(request, pk):
+    template = 'core/delete.html'
+    post = Post.objects.get(id=pk)
+
+    if request.user != post.author:
+        return HttpResponse('You are not allowd to delete this post')
+    
+    if request.method == 'POST':
+        post.delete()
+        return redirect('home')
+
+    context = {
+        'obj': post,
+    }
+    return render(request, template, context)
+
+def deletecomment(request, pk):
+    template = 'core/delete.html'
+
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if request.user != comment.user:
+        return HttpResponse('You are not allowed to delete this comment.')
+
+    if request.method == 'POST':
+        post_id = comment.post.id
+        comment.delete()
+        return redirect('comment', pk=post_id)
+
+    context = {
+        'obj': comment,
+    }
+    return render(request, template, context)
+
+def deletemessage(request, pk):
+    template = 'core/delete.html'
+
+    message = get_object_or_404(Message, pk=pk)
+
+    if request.method == 'POST':
+        message.delete()
+        return redirect('message', message.receiver)
+
+    context = {
+        'obj': message,
+    }
+    return render(request, template, context)
+
+def deleteinbox(request, pk):
+    template = 'core/delete.html'
+
+    message = get_object_or_404(Message, pk=pk)
+
+    if request.method == 'POST':
+        message.delete()
+        return redirect('inbox')
+
+    context = {
+        'obj': message,
     }
     return render(request, template, context)

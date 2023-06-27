@@ -11,6 +11,8 @@ urlpatterns = [
 
     path('settings/', views.settings, name='settings'),
     path('uploadpost/', views.uploadpost, name='uploadpost'),
+    path('delete/post/<str:pk>/', views.deletepost, name='deletepost'),
+
     path('likepost/', views.likePost, name='likepost'),
     path('profile/<str:username>/', views.profile, name='profile'),
     path('followunfollow/', views.followunfollow, name='followunfollow'),
@@ -26,8 +28,13 @@ urlpatterns = [
     path('password-change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='core/password_change_done.html'), name='password_change_done'),
 
     path('comment/<str:pk>/', views.comments, name='comment'),
+    path('delete/comment/<str:pk>/', views.deletecomment, name='deletecomment'),
+
     path('message/<str:receiver_username>/', views.send_message, name='message'),
+    path('delete/message/<str:pk>/', views.deletemessage, name='deletemessage'),
+
     path('inbox/', views.inbox, name='inbox'),
+    path('delete/inbox/<str:pk>/', views.deleteinbox, name='deleteinbox'),
 
     path('<str:username>/followers-list/', views.followers_list, name='followers-list'),
     path('<str:username>/following-list/', views.following_list, name='following-list'),
