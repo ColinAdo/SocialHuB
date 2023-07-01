@@ -273,9 +273,10 @@ def inbox(request):
     template = 'core/inbox.html'
     logged_in_user = request.user
 
-    distinct_senders = Message.objects.filter(receiver=logged_in_user).values('sender').distinct()
-    sender_ids = distinct_senders.values_list('sender', flat=True)
-    distinct_senders = User.objects.filter(id__in=sender_ids)
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct()
 
     context = {
         'distinct_senders': distinct_senders,
@@ -366,16 +367,10 @@ def deletemessage(request, pk):
     }
     return render(request, template, context)
 
-def deleteinbox(request, pk):
-    template = 'core/delete.html'
+def deleteinbox(request, message_id):
+    message = Message.objects.get(id=message_id)
 
-    message = get_object_or_404(Message, pk=pk)
+    message.is_deleted = True
+    message.save()
 
-    if request.method == 'POST':
-        message.delete()
-        return redirect('inbox')
-
-    context = {
-        'obj': message,
-    }
-    return render(request, template, context)
+    return redirect('inbox')

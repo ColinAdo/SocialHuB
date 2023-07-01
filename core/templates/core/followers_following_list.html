@@ -31,18 +31,7 @@
                 {% for follower in followers %}
                     <li>
                         <a href="{% url 'profile' follower.follower.username %}"><img src="{{follower.follower.profile.image.url}}" alt="pic" width="30" height="30"> {{ follower.follower.username }}</a>
-                        <form action="{% url 'followunfollow' %}" method="POST">
-                            {% csrf_token %}
-                            {% if request.user.username != user_profile.user.username %}
-                                <input type="hidden" value="{{request.user.username}}" name="follower">
-                                <input type="hidden" value="{{user_profile.user.username}}" name="user_being_followed">
-                                {% if following %}
-                                    <button type="submit">Unfollow</button>
-                                {% else %}
-                                    <button type="submit">Follow</button>
-                                {% endif %}
-                            {% endif %}
-                        </form>
+                        
                     </li>
                 {% endfor %}
             </ul>
@@ -56,18 +45,6 @@
                 {% for followed_user in users_following %}
                     <li>
                         <a href="{% url 'profile' followed_user.user_being_followed.username %}"><img src="{{followed_user.user_being_followed.profile.image.url}}" alt="pic" width="30" height="30"> {{ followed_user.user_being_followed.username }}</a>
-                        <form action="{% url 'followunfollow' %}" method="POST">
-                            {% csrf_token %}
-                            {% if request.user.username != user_profile.user.username %}
-                                <input type="hidden" value="{{request.user.username}}" name="follower">
-                                <input type="hidden" value="{{user_profile.user.username}}" name="user_being_followed">
-                                {% if following %}
-                                    <button type="submit">Unfollow</button>
-                                {% else %}
-                                    <button type="submit">Follow</button>
-                                {% endif %}
-                            {% endif %}
-                        </form>
                     </li>
                 {% endfor %}
             </ul>

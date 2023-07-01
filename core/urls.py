@@ -34,7 +34,7 @@ urlpatterns = [
     path('delete/message/<str:pk>/', views.deletemessage, name='deletemessage'),
 
     path('inbox/', views.inbox, name='inbox'),
-    path('delete/inbox/<str:pk>/', views.deleteinbox, name='deleteinbox'),
+    path('delete/inbox/<str:message_id>/', views.deleteinbox, name='deleteinbox'),
 
     path('<str:username>/followers-list/', views.followers_list, name='followers-list'),
     path('<str:username>/following-list/', views.following_list, name='following-list'),

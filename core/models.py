@@ -88,6 +88,7 @@ class Message(models.Model):
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
     content = models.TextField()
     date_sent = models.DateTimeField(default=timezone.now)
+    is_deleted = models.BooleanField(default=False, null=True)
 
     class Meta:
         get_latest_by = 'date_sent'
