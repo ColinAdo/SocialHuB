@@ -95,3 +95,13 @@ class Message(models.Model):
         
     def __str__(self):
         return f"Message From: {self.sender.username} | To: {self.receiver.username}"
+    
+class EmailVerification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    email = models.CharField(max_length=200)
+    code = models.CharField(max_length=10)
+    is_verified = models.BooleanField(default=False)
+    date_created = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f'{self.user.username} verification code'

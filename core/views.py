@@ -4,16 +4,20 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.db.models import Q
+from django.core.mail import send_mail
+from socialHub.settings import EMAIL_HOST_USER
 
 from django.core.paginator import Paginator
 
-from .models import Profile, Post, LikePost, FollowUnFollow, Comment, Message
+from .models import Profile, Post, LikePost, FollowUnFollow, Comment, Message, EmailVerification
 
 import random
 
 def home(request):
     template = 'core/index.html'
     logged_in_user = request.user
+
+    is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
 
     # Getting posts of the logged in user and their followers
     followers = FollowUnFollow.objects.filter(follower=logged_in_user)
@@ -34,6 +38,7 @@ def home(request):
     suggested_users_profiles = Profile.objects.filter(user__in=suggested_users)
 
     context = {
+        'is_verified': is_verified,
         'page_obj': page_obj,
         'suggested_users': zip(suggested_users, suggested_users_profiles),
     }
@@ -54,21 +59,64 @@ def signup(request):
                 return redirect('signup')
             elif User.objects.filter(username=username).exists():
                 messages.info(request, 'Username already exists')
-                return redirect('signin')
+                return redirect('signup')
             else:
                 user = User.objects.create_user(username=username, email=email, password=password1)
                 user.save()
+
+                # Generate verification code
+                code = str(random.randint(100000, 999999))
+
+                # Saving the verification code to the EmailVerification model
+                verification = EmailVerification.objects.create(user=user, email=email, code=code)
+                verification.save()
+
+                # Send verification email
+                subject = 'SocialHub Account Verification'
+                message = f'Your SocialHub verification code is: {code}'
+                from_email = EMAIL_HOST_USER
+                recipient_list = [email]
+
+                send_mail(subject, message, from_email, recipient_list)
+
 
                 # Creating profile for a user
                 new_user = User.objects.get(username=username)
                 profile = Profile.objects.create(user=new_user)
                 profile.save()
-                messages.success(request, 'User created successfully, you can now login')
-                return redirect('signin')
+
+                # loggin the user
+                user = authenticate(request, username=username, password=password1)
+                if user is not None:
+                    login(request, user)
+
+                messages.success(request, 'User created successfully. Please check your email for the verification code.')
+                return redirect('code_verification')
         else:
             messages.info(request, 'Password mismatch')
 
     context = {}
+    return render(request, template, context)
+
+def codeVerification(request):
+    template = 'core/code_verification.html'
+    logged_in_user = request.user
+    is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
+    
+    if request.method == 'POST':
+        code = request.POST['code']
+        try:
+            verification = EmailVerification.objects.get(user=logged_in_user, code=code, is_verified=False)
+            verification.is_verified = True
+            verification.save()
+
+            messages.success(request, "Your email verification is successful")
+            return redirect('home')
+        except EmailVerification.DoesNotExist:
+            messages.error(request, "Invalid verification code, try again!")
+            return redirect('code_verification')
+
+    context = {'is_verified': is_verified}
     return render(request, template, context)
 
 def signin(request):
@@ -96,6 +144,7 @@ def signout(request):
 def settings(request):
     template = 'core/settings.html'
     user = request.user
+    is_verified = EmailVerification.objects.filter(user=user, is_verified=True).exists()
     user_profile = Profile.objects.get(user=user)
     if request.method == 'POST':
         if request.FILES.get('image') is None:
@@ -120,13 +169,15 @@ def settings(request):
             messages.success(request, 'Settings updated successfully')
             return redirect('settings')
     context = {
-        'user_profile': user_profile
+        'user_profile': user_profile,
+        'is_verified': is_verified,
     }
     return render(request, template, context)
 
 def uploadpost(request):
     template = 'core/uploadpost.html'
     user = request.user
+    is_verified = EmailVerification.objects.filter(user=user, is_verified=True).exists()
 
     if request.method == 'POST':
         author = User.objects.get(username=user)
@@ -137,7 +188,7 @@ def uploadpost(request):
         new_post.save()
         messages.success(request, 'You have posted successfully')
         return redirect('home')
-    context = {}
+    context = {'is_verified': is_verified}
     return render(request, template, context)
 
 def likePost(request):
@@ -165,6 +216,7 @@ def likePost(request):
 def profile(request, username):
     template = 'core/profile.html'
     logged_in_user = request.user
+    is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
 
     author = User.objects.get(username=username)
     posts = Post.objects.filter(author=author).order_by('-date_posted')
@@ -186,6 +238,7 @@ def profile(request, username):
         'followers_count': followers_count,
         'following_count': following_count,
         'posts_count': posts_count,
+        'is_verified': is_verified,
     }
     return render(request, template, context)
 
@@ -272,6 +325,7 @@ def send_message(request, receiver_username):
 def inbox(request):
     template = 'core/inbox.html'
     logged_in_user = request.user
+    is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
 
     distinct_senders = User.objects.filter(
         sent_messages__receiver=logged_in_user,
@@ -280,12 +334,14 @@ def inbox(request):
 
     context = {
         'distinct_senders': distinct_senders,
+        'is_verified': is_verified,
     }
     return render(request, template, context)
 
 def followers_list(request, username):
     template = 'core/followers_following_list.html'
     logged_in_user = request.user
+    is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
 
     author = User.objects.get(username=username)
     user_profile = Profile.objects.get(user=author)
@@ -298,12 +354,14 @@ def followers_list(request, username):
         'user_profile': user_profile,
         'followers': followers,
         'following': following,
+        'is_verified': is_verified,
     }
     return render(request, template, context)
 
 def following_list(request, username):
     template = 'core/followers_following_list.html'
     logged_in_user = request.user
+    is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
 
     author = User.objects.get(username=username)
     user_profile = Profile.objects.get(user=author)
@@ -316,6 +374,7 @@ def following_list(request, username):
         'user_profile': user_profile,
         'users_following': users_following,
         'following': following,
+        'is_verified': is_verified,
     }
     return render(request, template, context)
 

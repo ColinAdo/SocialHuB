@@ -1,8 +1,8 @@
 {% load static %}
 <div>
     <p>
+        {% if request.user.is_authenticated and is_verified %} 
         <h2> <a href= "{% url 'home' %}">Logo</a></h2>
-        {% if request.user.is_authenticated %} 
         <form action="{% url 'search' %}" method="GET">
             {% csrf_token %}
             <input type="text" name="user" placeholder="Search for a user...." required>
