@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>Settings for {{user.username}} </h1>
+
+    <div>
+        <a href="{{ user_profile.image.url }}"> 
+            <img src="{{ user_profile.image.url }}" alt="" width="300" height="300"></a>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div>
+                <label for="">Profile Image</label>
+                <input type="file" name="image">
+            </div>
+            <div>
+                <label for="">Bio</label>
+                <textarea type="text" name="bio" id="" placeholder="Enter your bio" cols="34" rows="5">{{user_profile.bio}}</textarea>
+            </div>
+            <div>
+                <label for="">Location</label>
+                <input type="text" name="location" value="{{user_profile.location}}" placeholder="Enter your location">
+            </div>
+            <p>
+                <a href="{% url 'home' %}">Back</a>
+                <input type="submit" value="Save">
+            </p>
+        </form>
+        <a href="{% url 'password_change' %}">Change Password</a>
+    </div>
+{% endblock content %}
