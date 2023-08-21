@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Profile for @{{user_profile.user.username}}</h2>
+    <p><a href="{{user_profile.image.url}}"><img src="{{user_profile.image.url}}" alt="" width="300" height="300"></a></p>
+    {% if user_profile.bio %}
+        <p> <strong>ABOUT:</strong> {{user_profile.bio}}</p>
+    {% endif %}
+    {% if user_profile.location %}
+        <p><strong>LOCATION:</strong> {{user_profile.location}}</p>
+    {% endif %}
+
+    <div>
+        <form action="{% url 'followunfollow' %}" method="POST">
+            {% csrf_token %}
+            {% if request.user.username != user_profile.user.username %}
+                <input type="hidden" value="{{request.user.username}}" name="follower">
+                <input type="hidden" value="{{user_profile.user.username}}" name="user_being_followed">
+                {% if following %}
+                    <button type="submit">Unfollow</button>
+                    <a href="{% url 'message' user_profile.user.username %}">Message</a>
+                {% else %}
+                    <button type="submit">Follow</button>
+                {% endif %}
+            {% endif %}
+        </form>
+        <p>
+            {{followers_count}} <a href="{% url 'followers-list' user_profile.user.username %}"> Follower{{followers_count|pluralize}}</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {{following_count}} <a href="{% url 'following-list' user_profile.user.username %}"> Following{{following_count|pluralize}}</a> &nbsp;&nbsp;
+            {{posts_count}} Post{{posts_count|pluralize}}
+        </p>
+    </div>
+
+    <div>
+        {% for post in page_obj %}
+            {% if post.get_file_type == 'image' %}
+                <p><a href="{% url 'deletepost' post.id %}">Delete</a></p>
+                <a href="{{post.file.url}}"><img src="{{post.file.url}}" alt="post" width="300" height="300"></a>
+            {% elif post.get_file_type == 'video' %}
+                <p><a href="{% url 'deletepost' post.id %}">Delete</a></p>
+                <video controls width="300" height="300">
+                    <source src="{{ post.file.url }}" type="video/mp4">
+                </video>
+            {% else %}
+                <p>No file uploaded or unsupported file type.</p>
+            {% endif %}
+        {% if post.no_of_likes == 0 %}
+            <p>
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> No Love 
+                <a href="{{post.image.url}}" download>Download</a>
+            </p>
+        {% elif post.no_of_likes == 1 %}
+            <p>
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} person
+                <a href="{{post.image.url}}" download>Download</a>
+            </p>
+        {% else %}
+            <p>
+                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} people
+                <a href="{{post.image.url}}" download>Download</a>
+            </p>
+        {% endif %}
+        <p>Posted by <a href="{% url 'profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
+        <p>{{ post.caption }}</p>
+
+        {% with latest_comment=post.comment_set.latest %}
+        {% if latest_comment %}
+            <p>
+                <a href="{% url 'comment' post.id %}">
+                    {{ latest_comment.content }}
+                </a>
+            </p>
+            {% if post.comment_set.count > 1 %}
+                <p>
+                    <a href="{% url 'comment' post.id %}">
+                        view {{ post.comment_set.count|add:"-1" }} more comments
+                    </a>
+                </p>
+            {% endif %}
+        {% endif %}
+    {% endwith %}
+        <p><a href="{% url 'comment' post.id %}">Comment</a></p>
+    {% endfor %}
+    </div>
+
+    <!-- Pagination links -->
+    <div class="pagination">
+        <div class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+    
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <a href="?page={{ num }}"><strong>{{ num }}</strong></a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:"3" %}
+                    <a href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+    
+{% endblock content %}

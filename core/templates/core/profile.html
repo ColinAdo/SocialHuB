@@ -1,110 +1,372 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    <h2>Profile for @{{user_profile.user.username}}</h2>
-    <p><a href="{{user_profile.image.url}}"><img src="{{user_profile.image.url}}" alt="" width="300" height="300"></a></p>
-    {% if user_profile.bio %}
-        <p> <strong>ABOUT:</strong> {{user_profile.bio}}</p>
-    {% endif %}
-    {% if user_profile.location %}
-        <p><strong>LOCATION:</strong> {{user_profile.location}}</p>
-    {% endif %}
-
-    <div>
-        <form action="{% url 'followunfollow' %}" method="POST">
-            {% csrf_token %}
-            {% if request.user.username != user_profile.user.username %}
+  <aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 " id="sidenav-main">
+    <div class="sidenav-header">
+      <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+      <a class="navbar-brand m-0" href="{% url 'home' %}" target="_blank">
+        <img src="{% static 'img/logo-ct-dark.png' %}" class="navbar-brand-img h-100" alt="main_logo">
+        <span class="ms-1 font-weight-bold">LOGO</span>
+      </a>
+    </div>
+    <hr class="horizontal dark mt-0">    
+    
+    <!-- profile start -->
+    <div class="d-flex flex-column">
+        <div class="d-flex justify-content-evenly">
+          <a href="{{user_profile.image.url}}">
+            <img src="{{user_profile.image.url}}" class="img-fluid rounded-circle" style="width: 210px; height: 210px;">
+          </a>
+        </div>
+          <div class="d-flex justify-content-evenly">
+              <h4 class="fs-4">{{user_profile.user.username}}</h4>
+          </div>
+          
+          <div class="d-flex justify-content-evenly mt-1 text-center">
+            <form action="{% url 'followunfollow' %}" method="POST">
+              {% csrf_token %}
+              {% if request.user.username != user_profile.user.username %}
                 <input type="hidden" value="{{request.user.username}}" name="follower">
                 <input type="hidden" value="{{user_profile.user.username}}" name="user_being_followed">
-                {% if following %}
-                    <button type="submit">Unfollow</button>
-                    <a href="{% url 'message' user_profile.user.username %}">Message</a>
-                {% else %}
-                    <button type="submit">Follow</button>
-                {% endif %}
-            {% endif %}
-        </form>
-        <p>
-            {{followers_count}} <a href="{% url 'followers-list' user_profile.user.username %}"> Follower{{followers_count|pluralize}}</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            {{following_count}} <a href="{% url 'following-list' user_profile.user.username %}"> Following{{following_count|pluralize}}</a> &nbsp;&nbsp;
-            {{posts_count}} Post{{posts_count|pluralize}}
-        </p>
+              {% if following %}
+                <button type="submit" class="text-primary btn btn-light">Unfollow</button>
+                <a href="{% url 'message' user_profile.user.username %}" class="text-primary btn btn-light">Message</a>
+              {% else %}
+                <button type="submit" class="text-primary btn btn-light">Follow</button>
+              {% endif %}
+              {% endif %}
+            </form>
+          </div>
+          <div class="d-flex justify-content-evenly mt-1 text-center">
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-instagram"></i></a>
+            <a href="#"><i class="fa fa-atom"></i></a>
+            <a href="#"><i class="fa fa-linkedin"></i></a>
+          </div>
     </div>
+    <!-- profile end -->
+    <hr class="horizontal dark mt-0"> 
 
-    <div>
-        {% for post in page_obj %}
-            {% if post.get_file_type == 'image' %}
-                <p><a href="{% url 'deletepost' post.id %}">Delete</a></p>
-                <a href="{{post.file.url}}"><img src="{{post.file.url}}" alt="post" width="300" height="300"></a>
-            {% elif post.get_file_type == 'video' %}
-                <p><a href="{% url 'deletepost' post.id %}">Delete</a></p>
-                <video controls width="300" height="300">
-                    <source src="{{ post.file.url }}" type="video/mp4">
-                </video>
-            {% else %}
-                <p>No file uploaded or unsupported file type.</p>
-            {% endif %}
-        {% if post.no_of_likes == 0 %}
-            <p>
-                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> No Love 
-                <a href="{{post.image.url}}" download>Download</a>
-            </p>
-        {% elif post.no_of_likes == 1 %}
-            <p>
-                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} person
-                <a href="{{post.image.url}}" download>Download</a>
-            </p>
-        {% else %}
-            <p>
-                <a href="{% url 'likepost' %}?post_id={{post.id}}">Love</a> Loved by {{post.no_of_likes}} people
-                <a href="{{post.image.url}}" download>Download</a>
-            </p>
-        {% endif %}
-        <p>Posted by <a href="{% url 'profile' post.author %}">{{ post.author }}</a> on {{ post.date_posted }}</p>
-        <p>{{ post.caption }}</p>
 
-        {% with latest_comment=post.comment_set.latest %}
-        {% if latest_comment %}
-            <p>
-                <a href="{% url 'comment' post.id %}">
-                    {{ latest_comment.content }}
+    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+        <ul class="navbar-nav pe-2 d-flex align-items-center">
+          {% if user_profile.bio %}
+            <li class="nav-item">
+              <a class="nav-link active " href="#">
+                <div
+                  class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                  <i class="fa fa-user text-success text-sm opacity-10"></i>
+                </div>
+            
+                <button type="button" class="btn btn-lg bg-gradient-light" data-bs-trigger="focus" data-bs-toggle="popover"
+                  data-bs-title="{{user_profile.user.username}}" data-bs-content="ABOUT: {{user_profile.bio}} I live in {{user_profile.location}}">
+                  <span class="nav-link-text ms-1">About</span>
+                </button>
+              </a>
+            </li>
+          {% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link active " href="{% url 'uploadpost' %}">
+              <div
+                class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="ni ni-album-2 text-success text-sm opacity-10"></i>
+              </div>
+              <span class="nav-link-text ms-1">Upload Post</span>
+            </a>
+          </li>
+          {% if followers_count > 0 %}
+            <li class="nav-item">
+              <a class="nav-link " href="{% url 'followers-list' user_profile.user.username %}">
+                <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                  <i class="ni ni-favourite-28 text-warning text-sm opacity-10"></i>
+                </div>
+                  <span class="nav-link-text ms-1 d-flex justify-content-between">Followers 
+                    <div class="circle bg-gradient-success">
+                      <span class="number text-dark">{{followers_count}}</span>
+                    </div>
+                </span>
+              </a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link " href="#">
+                <div
+                  class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                  <i class="ni ni-favourite-28 text-warning text-sm opacity-10"></i>
+                </div>
+                <span class="nav-link-text ms-1 d-flex justify-content-between">Followers
+                  <div class="circle bg-gradient-success">
+                    <span class="number text-dark">{{followers_count}}</span>
+                  </div>
+                </span>
+              </a>
+            </li>
+          {% endif %}
+
+          {% if following_count > 0 %}
+            <li class="nav-item">
+              <a class="nav-link " href="{% url 'following-list' user_profile.user.username %}">
+                <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                  <i class="ni ni-camera-compact text-success text-sm opacity-10"></i>
+                </div>
+                <span class="nav-link-text ms-1 d-flex justify-content-between">Following 
+                  <div class="circle bg-gradient-success">
+                    <span class="number text-dark">{{following_count}}</span>
+                  </div>
+              </span>
+              </a>
+            </li>
+          {% else %}
+              <li class="nav-item">
+                <a class="nav-link " href="#">
+                  <div
+                    class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                    <i class="ni ni-camera-compact text-success text-sm opacity-10"></i>
+                  </div>
+                  <span class="nav-link-text ms-1 d-flex justify-content-between">Following
+                    <div class="circle bg-gradient-success">
+                      <span class="number text-dark">{{following_count}}</span>
+                    </div>
+                  </span>
                 </a>
-            </p>
-            {% if post.comment_set.count > 1 %}
-                <p>
-                    <a href="{% url 'comment' post.id %}">
-                        view {{ post.comment_set.count|add:"-1" }} more comments
-                    </a>
-                </p>
+              </li>
             {% endif %}
-        {% endif %}
-    {% endwith %}
-        <p><a href="{% url 'comment' post.id %}">Comment</a></p>
-    {% endfor %}
+          <li class="nav-item">
+            <a class="nav-link " href="{% url 'settings' %}">
+              <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="ni ni-settings text-info text-sm opacity-10"></i>
+              </div>
+              <span class="nav-link-text ms-1">Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " href="{% url 'password_change' %}">
+              <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                <i class="ni ni-key-25 text-danger text-sm opacity-10"></i>
+              </div>
+              <span class="nav-link-text ms-1">Security</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+  </aside>
+  <main class="main-content position-relative border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur" data-scroll="false">
+      <div class="container-fluid py-1 px-3">
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+          <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+            <div class="input-group">
+              <form action="{% url 'search' %}" method="GET">
+                {% csrf_token %}
+          
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                  </span>
+                  <input type="text" name="user" class="form-control" placeholder="Search here...." required aria-label="Username"
+                    aria-describedby="basic-addon1">
+                </div>
+              </form>
+            </div>
+          </div>
+          <ul class="navbar-nav  justify-content-end">
+              <!-- Notification begines -->
+            <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <span class="bell-icon">
+                  <i class="fa fa-bell cursor-pointer text-dark"></i>
+                  <small class="text-danger fw-bolder">23</small>
+                </span>
+              </a>
+
+              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="my-auto">
+                        <img src="./assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold">New message</span> from Laur
+                        </h6>
+                        <p class="text-xs text-secondary mb-0">
+                          <i class="fa fa-clock me-1"></i>
+                          13 minutes ago
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="my-auto">
+                        <img src="./assets/img/small-logos/logo-spotify.svg" class="avatar avatar-sm bg-gradient-dark  me-3 ">
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm text-dark font-weight-normal mb-1">
+                          <span class="font-weight-bold">New album</span> by Travis Scott
+                        </h6>
+                        <p class="text-xs text-secondary mb-0">
+                          <i class="fa fa-clock me-1"></i>
+                          1 day
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
+                        <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                          <title>credit-card</title>
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                              <g transform="translate(1716.000000, 291.000000)">
+                                <g transform="translate(453.000000, 454.000000)">
+                                  <path class="color-background" d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z" opacity="0.593633743"></path>
+                                  <path class="color-background" d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"></path>
+                                </g>
+                              </g>
+                            </g>
+                          </g>
+                        </svg>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm text-dark font-weight-normal mb-1">
+                          Payment successfully completed
+                        </h6>
+                        <p class="text-xs text-secondary mb-0">
+                          <i class="fa fa-clock me-1"></i>
+                          2 days
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- Notification end My own -->
+            <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{ request.user.profile.image.url }}" class="avatar avatar-sm  me-3 ">
+              </a>
+
+              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Profile</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                        <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-settings text-success text-sm opacity-10"></i>
+                          </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Settings</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="javascript:;">
+                    <div class="d-flex py-1">
+                        <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="ni ni-user-run text-danger text-sm opacity-10"></i>
+                          </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Logout</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                
+              </ul>
+            </li>
+            <!-- Notification start -->
+            
+            <!-- Side bar toggler -->
+            <li class="nav-item d-xl-none ps-3 d-flex align-items-center text-dark ">
+              <a href="javascript:;" class="nav-link text-dark p-0" id="iconNavbarSidenav">
+                <div class="sidenav-toggler-inner text-dark">
+                  <i class="sidenav-toggler-line bg-gradient-dark"></i>
+                  <i class="sidenav-toggler-line bg-gradient-dark"></i>
+                  <i class="sidenav-toggler-line bg-gradient-dark"></i>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+    <span class="m-5">
+      <a href="{{prev_url}}">
+        <i class="ni ni-bold-left"></i>
+      </a>
+      <b>Back</b>
+      <span>{{posts_count}} Post{{posts_count|pluralize}}</span>
+    </span>
+
+    <!-- profile Post feed -->
+    {% if posts %}
+    <div class="container text-center">
+      <div class="row row-cols-2 row-cols-lg-3 g-2 g-lg-3">
+        <!-- loop start -->
+        {% for post in posts %}
+        <div class="col">
+          <div class="p-3 post-item">
+            {% if post.get_file_type == 'image' %}
+            <a href="#">
+              <img src="{{post.file.url}}" class="img-fluid rounded" alt="Image 1">
+            </a>
+            {% elif post.get_file_type == 'video' %}
+            <a href="#">
+              <video controls class="img-fluid rounded" alt="Image 1">
+                <source src="{{ post.file.url }}" type="video/mp4">
+              </video>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
 
-    <!-- Pagination links -->
-    <div class="pagination">
-        <div class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
+
     
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <a href="?page={{ num }}"><strong>{{ num }}</strong></a>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:"3" %}
-                    <a href="?page={{ num }}">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
+    <!-- loop end -->
+    {% else %}
     
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </div>
+    <div class="alert alert-light text-dark d-flex justify-content-center" role="alert">
+      The user has not posted anything yet!
     </div>
     
+    {% endif %}
+    <!-- profile Post feed end -->
+  </main>
+
+
 {% endblock content %}

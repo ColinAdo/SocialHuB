@@ -230,8 +230,10 @@ def profile(request, username):
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
     followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
     following_count = FollowUnFollow.objects.filter(follower=author).count()
-
+    prev_url = request.META.get('HTTP_REFERER')
     context = {
+        'posts': posts,
+        'prev_url': prev_url,
         'page_obj': page_obj,
         'user_profile': user_profile,
         'following': following,
