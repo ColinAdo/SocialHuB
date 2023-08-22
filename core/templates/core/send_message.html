@@ -1,20 +1,335 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    <h4>Send Message to {{ receiver.username }}</h4>
 
-    {% for message in received_messages %}
-        {% if message.receiver.username == receiver.username or message.sender.username == receiver.username %}
-            <div>
-                <p><a href="{% url 'profile' message.sender.username %}"><img src="{{ message.sender.profile.image.url }}" width="30" height="30"></a>
-                    {{ message.content }} {{ message.date_sent|timesince }} ago &nbsp; <a href="{% url 'deletemessage' message.id %}">Delete</a></p>
+<main class="main-content position-relative border-radius-lg ">
+  <!-- Navbar -->
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur"
+    data-scroll="false">
+    <div class="container-fluid py-1 px-3">
+      <div class="d-flex justify-content-between align-items-center w-100">
+        <!-- Logo (Far Left) -->
+        <a class="navbar-brand" href="{{request.META.HTTP_REFERER}}">
+          <!-- <img src="your-logo.png" alt="Logos"> -->
+          <i class="ni ni-bold-left"></i>
+        </a>
+
+        <!-- User Profile and Notification (Far Right) -->
+        <ul class="navbar-nav">
+          <div class="ms-md-auto pe-md-3 d-flex mt-3 align-items-center">
+            <div class="input-group">
+              <form action="{% url 'search' %}" method="GET">
+                {% csrf_token %}
+
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                  </span>
+                  <input type="text" name="user" class="form-control" placeholder="Search here...." required
+                    aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+              </form>
             </div>
-        {% endif %}
-    {% endfor %}
+          </div>
+          <!-- Notification begins -->
+          <li class="nav-item dropdown pe-2 d-flex align-items-center">
+            <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <span class="bell-icon m-3">
+                <i class="fa fa-bell cursor-pointer text-dark"></i>
+                <small class="text-danger fw-bolder">23</small>
+              </span>
+            </a>
 
-    <form action="" method="POST">
-        {% csrf_token %}
-        <textarea name="content" placeholder="Write your message" required></textarea>
-        <button type="submit">Send</button>
-    </form>
+            <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" href="javascript:;">
+                  <div class="d-flex py-1">
+                    <div class="my-auto">
+                      <img src="./assets/img/team-2.jpg" class="avatar avatar-sm  me-3 ">
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm font-weight-normal mb-1">
+                        <span class="font-weight-bold">New message</span> from Laur
+                      </h6>
+                      <p class="text-xs text-secondary mb-0">
+                        <i class="fa fa-clock me-1"></i>
+                        13 minutes ago
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" href="javascript:;">
+                  <div class="d-flex py-1">
+                    <div class="my-auto">
+                      <img src="./assets/img/small-logos/logo-spotify.svg"
+                        class="avatar avatar-sm bg-gradient-dark  me-3 ">
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm text-dark font-weight-normal mb-1">
+                        <span class="font-weight-bold">New album</span> by Travis Scott
+                      </h6>
+                      <p class="text-xs text-secondary mb-0">
+                        <i class="fa fa-clock me-1"></i>
+                        1 day
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item border-radius-md" href="javascript:;">
+                  <div class="d-flex py-1">
+                    <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
+                      <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1"
+                        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <title>credit-card</title>
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                            <g transform="translate(1716.000000, 291.000000)">
+                              <g transform="translate(453.000000, 454.000000)">
+                                <path class="color-background"
+                                  d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
+                                  opacity="0.593633743"></path>
+                                <path class="color-background"
+                                  d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z">
+                                </path>
+                              </g>
+                            </g>
+                          </g>
+                        </g>
+                      </svg>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm text-dark font-weight-normal mb-1">
+                        Payment successfully completed
+                      </h6>
+                      <p class="text-xs text-secondary mb-0">
+                        <i class="fa fa-clock me-1"></i>
+                        2 days
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <!-- User Profile -->
+          <li class="nav-item dropdown pe-2 d-flex align-items-center">
+            <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <img src="{{ request.user.profile.image.url }}" class="avatar avatar-sm  me-3 ">
+            </a>
+
+            <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" href="{% url 'home' %}">
+                  <div class="d-flex py-1">
+                    <div
+                      class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                      <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm font-weight-normal mb-1">
+                        <span class="font-weight-bold text-dark">Home</span>
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" href="{% url 'profile' request.user.username %}">
+                  <div class="d-flex py-1">
+                    <div
+                      class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                      <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm font-weight-normal mb-1">
+                        <span class="font-weight-bold text-dark">Profile</span>
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" href="{% url 'settings' %}">
+                  <div class="d-flex py-1">
+                    <div
+                      class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                      <i class="ni ni-settings text-success text-sm opacity-10"></i>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm font-weight-normal mb-1">
+                        <span class="font-weight-bold text-dark">Settings</span>
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" href="{% url 'password_change' %}">
+                  <div class="d-flex py-1">
+                    <div
+                      class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                      <i class="ni ni-key-25 text-success text-sm opacity-10"></i>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm font-weight-normal mb-1">
+                        <span class="font-weight-bold text-dark">Change Password</span>
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" href="{% url 'signout' %}">
+                  <div class="d-flex py-1">
+                    <div
+                      class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                      <i class="ni ni-user-run text-danger text-sm opacity-10"></i>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center">
+                      <h6 class="text-sm font-weight-normal mb-1">
+                        <span class="font-weight-bold text-dark">Logout</span>
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+
+            </ul>
+          </li>
+          <!-- Notification end -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- End Navbar -->
+
+  <!-- Comment feed -->
+  <div class="align-items-start min-vh-25 mb-4 border-radius-lg">
+  </div>
+  <div class="container-fluid py-4">
+    <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
+      <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
+        <div class="card z-index-0">
+          <div class="card-body">
+            <div class="container-fluid py-4">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card-header pb-0">
+                    <h6>Send message to {{ receiver.username }}</h6>
+                  </div>
+
+                  {% for message in received_messages %}
+                  {% if message.receiver.username == receiver.username or message.sender.username == receiver.username %}
+                    {% if message.sender.username == request.user.username %}
+                  <div class="card mb-4">
+                    <!-- delete model popover -->
+                    <div class="d-flex justify-content-end">
+                      <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
+                        data-bs-content="<a href='{% url 'deletemessage' message.id %}' class='text-danger'>Delete</a>">
+                        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                      </a>
+                    </div>
+                  
+                    <!-- end delete popover -->
+                  
+                  
+                    <div class="card-body px-0 pt-0 pb-2 d-flex flex-column">
+                      <div class="d-flex px-2 py-1 justify-content-end"> <!-- Added justify-content-end class here -->
+                        
+                        <div class="d-flex flex-column justify-content-end">
+                          <h6 class="mb-0 text-sm"> You
+                            <small>
+                              {{ message.date_sent|timesince }} ago
+                            </small>
+                          </h6>
+                          <div class="comment-text">
+                            <p class="text-xs text-dark rounded-3 p-2">
+                              {{ message.content }}
+                            </p>
+                          </div>
+                        </div>
+
+                        <a href="{% url 'profile' message.sender.username %}">
+                          <img src="{{ message.sender.profile.image.url }}" class="avatar avatar-lg me-3 mx-auto p-2">
+                        </a>
+                      </div>
+                    </div>
+
+                  </div>
+                  {% else %}
+                    <div class="card mb-4">
+                      <!-- delete model popover -->
+                      <div class="d-flex justify-content-end">
+                        <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
+                          data-bs-content="<a href='{% url 'deletemessage' message.id %}' class='text-danger'>Delete</a>">
+                          <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                        </a>
+                      </div>
+                    
+                      <!-- end delete popover -->
+                    
+                    
+                      <div class="card-body px-0 pt-0 pb-2">
+                        <div class="d-flex px-2 py-1">
+                          <a href="{% url 'profile' message.sender.username %}">
+                            <img src="{{ message.sender.profile.image.url }}" class="avatar avatar-lg me-3 mx-auto p-2">
+                          
+                          <div class="d-flex flex-column justify-content-start">
+                            <h6 class="mb-0 text-sm">{{ message.sender.username }}
+                          </a>
+                              <small> {{ message.date_sent|timesince }} ago
+                    
+                              </small>
+                    
+                            </h6>
+                            <div class="comment-text">
+                              <p class="text-xs text-dark rounded-3 p-2" style="background-color: rgb(228, 216, 240)">
+                                {{ message.content }}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                  {% endif %}
+                  {% endfor %}
+
+                  <div class="card">
+                    <form method="POST">
+                      {% csrf_token %}
+                      <div class="input-group mb-3">
+                        <div class="form-floating">
+                          <textarea name="content" class="form-control custom-width" id="floatingInputGroup1"
+                            placeholder="Comment"></textarea>
+                          <label for="floatingInputGroup1">Send</label>
+                        </div>
+                        <span class="input-group-text">
+                          <button class="bg-gradient-success" type="submit" style="border-radius: 50%;"><i
+                              class="fa fa-send"></i></button>
+                          </i></span>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <!-- end comment -->
+</main>
+
+
 {% endblock content %}
