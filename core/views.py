@@ -244,6 +244,27 @@ def profile(request, username):
     }
     return render(request, template, context)
 
+def profile_posts(request, username, post_id):
+    template = 'core/profileposts.html'
+    logged_in_user = request.user
+    is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
+
+    author = User.objects.get(username=username)
+    post = get_object_or_404(Post, id=post_id, author=author)
+    posts = Post.objects.filter(author=post.author).exclude(id=post_id).order_by('-date_posted')
+
+    paginator = Paginator(posts, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'posts': posts,
+        'post': post,
+        'page_obj': page_obj,
+        'is_verified': is_verified,
+    }
+    return render(request, template, context)
+
 def followunfollow(request):
     logged_in_user = request.user
     if request.method == 'POST':
