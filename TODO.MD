@@ -10,3 +10,5 @@
 ## Align the message count at fixed position in inbox.html
 ## Add dynamic user suggestions on top of index.html
 ## Add message error in each indiividual form
+## Add dynamic like icon
+## Configure post download

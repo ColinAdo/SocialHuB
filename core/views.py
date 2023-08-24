@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
 from django.db.models import Q
 from django.core.mail import send_mail
 from socialHub.settings import EMAIL_HOST_USER
@@ -34,10 +34,13 @@ def home(request):
     suggested_users = User.objects.exclude(pk=logged_in_user.pk).exclude(followers__follower=logged_in_user)
     suggested_users = list(suggested_users) 
     random.shuffle(suggested_users) 
-    suggested_users = suggested_users[:2]
+    suggested_users = suggested_users[:5]
     suggested_users_profiles = Profile.objects.filter(user__in=suggested_users)
 
+    liked_posts = [like.post_id.id for like in request.user.likepost_set.all()]
+
     context = {
+        'liked_posts': liked_posts,
         'is_verified': is_verified,
         'page_obj': page_obj,
         'suggested_users': zip(suggested_users, suggested_users_profiles),
@@ -211,7 +214,8 @@ def likePost(request):
         post.no_of_likes = post.no_of_likes - 1
         post.save()
     prev_url = request.META.get('HTTP_REFERER')
-    return redirect(prev_url)
+    response_data = {'liked': filter_likes is None, 'post_id': post_id}
+    return JsonResponse(response_data)
 
 def profile(request, username):
     template = 'core/profile.html'
@@ -311,7 +315,7 @@ def comments(request, pk):
     content=request.POST.get('content')
 
     post = Post.objects.get(id=pk)
-    comments = post.comment_set.all()
+    comments = post.comment_set.all().order_by('-date_posted')
 
     if request.method == 'POST':
         comment = Comment.objects.create(
@@ -372,11 +376,15 @@ def followers_list(request, username):
     followers = FollowUnFollow.objects.filter(user_being_followed=author)
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
 
+    followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
+    following_count = FollowUnFollow.objects.filter(follower=author).count()
 
     context = {
         'user_profile': user_profile,
         'followers': followers,
         'following': following,
+        'followers_count': followers_count,
+        'following_count': following_count,
         'is_verified': is_verified,
     }
     return render(request, template, context)
@@ -392,12 +400,16 @@ def following_list(request, username):
     users_following = FollowUnFollow.objects.filter(follower=author)
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
 
+    followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
+    following_count = FollowUnFollow.objects.filter(follower=author).count()
 
     context = {
         'user_profile': user_profile,
         'users_following': users_following,
         'following': following,
         'is_verified': is_verified,
+        'followers_count': followers_count,
+        'following_count': following_count,
     }
     return render(request, template, context)
 

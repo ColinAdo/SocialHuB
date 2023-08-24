@@ -1,18 +1,57 @@
 {% extends 'base.html' %}
-{% load custom_filters %}
 {% load static %}
 
 {% block content %}
+<aside
+      class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4"
+      id="sidenav-main"
+    >
+      <div class="sidenav-header">
+        <i
+          class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+          aria-hidden="true"
+          id="iconSidenav"
+        ></i>
+        <a
+          class="navbar-brand m-0"
+          href="{% url 'home' %}"
+          target="_blank"
+        >
+          <img
+            src="{% static 'img/logo-ct-dark.png' %}"
+            class="navbar-brand-img h-100"
+            alt="main_logo"
+          />
+          <span class="ms-1 font-weight-bold">LOGO</span>
+        </a>
+      </div>
+      <hr class="horizontal dark mt-0" />
+      <span class="ms-1 font-weight-bold">Suggested For You</span>
 
+      {% for user, profile in suggested_users %}
+      <li class="nav-item dropdown pe-2 d-flex align-items-center">
+        <a href="{% url 'profile' profile.user %}" style="text-decoration: none;">
+          <img
+            src="{{ profile.image.url }}"
+            class="avatar avatar-lg me-3 mx-auto p-2"
+          />
+          <span class="font-weight-bold">{{profile.user}}</span>
+        </a>
+      </li>
+      {% endfor %}
+      
+
+</aside>
     <main class="main-content position-relative border-radius-lg">
       
       <!-- Navbar -->
-      <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+      <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur"
       data-scroll="false">
       <div class="container-fluid py-1 px-3">
         <div class="d-flex justify-content-between align-items-center w-100">
           <!-- Logo (Far Left) -->
           <a class="navbar-brand" href="{% url 'home' %}">
+            <!-- <img src="your-logo.png" alt="Logos"> -->
             LOGO HERE
           </a>
     
@@ -131,7 +170,7 @@
                     <div class="d-flex py-1">
                       <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <ion-icon name="home"></ion-icon>
+                        <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -161,8 +200,7 @@
                     <div class="d-flex py-1">
                       <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <!-- <i class="ni ni-settings text-success text-sm opacity-10"></i> -->
-                        <ion-icon name="settings"></ion-icon>
+                        <i class="ni ni-settings text-success text-sm opacity-10"></i>
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -177,8 +215,7 @@
                     <div class="d-flex py-1">
                       <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <!-- <i class="ni ni-key-25 text-success text-sm opacity-10"></i> -->
-                        <ion-icon name="key"></ion-icon>
+                        <i class="ni ni-key-25 text-success text-sm opacity-10"></i>
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -193,7 +230,7 @@
                     <div class="d-flex py-1">
                       <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <ion-icon name="log-in"></ion-icon>
+                        <i class="ni ni-user-run text-danger text-sm opacity-10"></i>
                       </div>
                       <div class="d-flex flex-column justify-content-center">
                         <h6 class="text-sm font-weight-normal mb-1">
@@ -207,34 +244,22 @@
               </ul>
             </li>
             <!-- Notification end -->
+
+            <!-- Side bar toggler -->
+            <li class="nav-item d-xl-none ps-3 d-flex align-items-center text-dark">
+              <a href="javascript:;" class="nav-link text-dark p-0" id="iconNavbarSidenav">
+                <div class="sidenav-toggler-inner text-dark">
+                  <i class="sidenav-toggler-line bg-gradient-dark"></i>
+                  <i class="sidenav-toggler-line bg-gradient-dark"></i>
+                  <i class="sidenav-toggler-line bg-gradient-dark"></i>
+                </div>
+              </a>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
       <!-- End Navbar -->
-
-<div class="container">
-    <div class="row">
-        <div class="col">
-          <h5 class="text-uppercase navbar-brand">Suggested Users To Follow</h5>
-            <div class="d-flex flex-nowrap overflow-auto">
-                {% for user, profile in suggested_users %}
-                    <div class="col-md-3 mb-4">
-                        <div class="d-flex flex-column align-items-center p-1">
-                            <a href="{% url 'profile' profile.user %}">
-                                <img src="{{ profile.image.url }}" alt="{{ profile.user }}" class="img-fluid rounded-circle" style="width: 80px; height: 80px;">
-                            </a>
-                            <strong>
-                              <a href="{% url 'profile' profile.user %}">{{ profile.user }}</a>
-                            </strong>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <hr>
-        </div>
-    </div>
-</div>
 
           <!-- Post feed -->
           {% for post in page_obj %}
@@ -242,8 +267,8 @@
               <div class="row justify-content-center">
                 <div class="col-10 col-md-6 text-center">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong><a href="{% url 'profile' post.author %}">@{{post.author}}</a></strong>
-                    <span class="text-dark"><strong>{{ post.date_posted|custom_timesince }}</strong></span>
+                    <a href="{% url 'profile' post.author %}">@{{post.author}}</a>
+                    <span class="text-secondary">{{ post.date_posted }}</span>
                   </div>
                   {% if post.get_file_type == 'image' %}
                     <a href="{{post.file.url}}"><img src="{{post.file.url}}" class="img-fluid rounded" alt="post"></a>
@@ -256,72 +281,39 @@
                   {% endif %}
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     {% if post.no_of_likes == 0 %}
-                    <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
-                      <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}"></ion-icon>
-                    </a>
-                      <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
-                      <small class="text-dark">No like</small>
-                      <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                      <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary"> <small>Like</small></i></a>
+                      <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
+                      <small class="text-primary">No like</small>
+                      <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
                     {% elif post.no_of_likes == 1 %}
-                    
-                    <div class="d-flex justify-content-start">
-                          <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
-                          <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}">
-                          </ion-icon>
-                        </a>
-                        <small class="text-dark">{{post.no_of_likes}}</small>
-                    </div>
-                    
-                    <div class="d-flex justify-content-start">
-                      <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
-                        <small class="text-dark">{{post.comment_set.count}}</small>
-                    </div>    
-                      <small class="text-dark">{{post.no_of_likes}} person liked this post</small>
-                    
-                          <a href="{{ post.image.url }}" download="{{ post.image.name }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                      <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary">
+                          <small>Like</small></i></a>
+                      <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
+                          <small class="text-primary">{{post.no_of_likes}} person liked this post</small>
+                      <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
                     {% else %}
-                    <div class="d-flex justify-content-start">
-                      <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
-                        <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}"></ion-icon>
-                      </a>
-                        <small class="text-dark">{{post.no_of_likes}}</small>
-                    </div>
-
-                    <div class="d-flex justify-content-start">
-                        <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
-                        <small class="text-dark">{{post.comment_set.count}}</small>
-                    </div>    
-                      <small class="text-dark" >{{post.no_of_likes}} people liked this post</small>
-                            <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                        <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary">
+                            <small>Like</small></i></a>
+                        <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
+                            <small class="text-primary" >{{post.no_of_likes}} people liked this post</small>
+                        <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
                     {% endif %}
                       </div>
-                      <div class="d-flex justify-content-start text-dark">
-                        <strong>{{ post.caption }}</strong>
+                      <div class="d-flex justify-content-start">
+                        <small>{{ post.caption }}</small>
                       </div>
                       
                         {% with latest_comment=post.comment_set.latest %}
                           {% if latest_comment %}
                             <div class="d-flex justify-content-start">
-                                {% if latest_comment.content|wordcount > 5 %}
-                                    <small>{{ latest_comment.content|truncate_word:5 }}</small>
-                                    <a class="text-decoration-none" href="{% url 'comment' post.id %}">
-                                        <small>read more</small>
-                                    </a>
-                                {% else %}
-                                    <small>{{ latest_comment.content }}</small>
-                                {% endif %}
+                              <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                {{ latest_comment.content }}
+                              </a>
                             </div>
-
-                            {% if post.comment_set.count == 2 %}
+                            {% if post.comment_set.count > 1 %}
                               <div class="d-flex justify-content-start">
                                 <a class="text-decoration-none" href="{% url 'comment' post.id %}">
-                                  <small>view {{ post.comment_set.count|add:"-1" }} more comment....</small>
-                                </a>
-                              </div>
-                              {% else %}
-                                <div class="d-flex justify-content-start">
-                                <a class="text-decoration-none" href="{% url 'comment' post.id %}">
-                                  <small>view all {{ post.comment_set.count|add:"-1" }} comments....</small>
+                                  view {{ post.comment_set.count|add:"-1" }} more comments
                                 </a>
                               </div>
                             {% endif %}

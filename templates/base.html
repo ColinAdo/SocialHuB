@@ -85,7 +85,7 @@ label {
 </style>
   </head>
 
-<body class="g-sidenav-show" style="background-color: rgb(228, 216, 240)">
+<body class="g-sidenav-show">
     <!-- {% include 'nav.html' %} -->
     <div class="">
         {% if messages %}
@@ -323,7 +323,48 @@ label {
           $('[data-bs-toggle="popover"]').popover();
         });
     </script>
- 
+    <!-- Script to handle like and unlike -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const likeButtons = document.querySelectorAll(".like-button");
+        likeButtons.forEach(button => {
+            button.addEventListener("click", handleLikeClick);
+        });
+
+        function handleLikeClick(event) {
+            event.preventDefault();
+            const postId = event.currentTarget.getAttribute("data-post-id");
+            const icon = event.currentTarget.querySelector("ion-icon");
+
+            fetch(`{% url 'likepost' %}?post_id=${postId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.liked) {
+                        icon.setAttribute("name", "heart");
+                        addToLikedPosts(postId);
+                    } else {
+                        icon.setAttribute("name", "heart-outline");
+                        removeFromLikedPosts(postId);
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        function addToLikedPosts(postId) {
+            let likedPosts = JSON.parse(localStorage.getItem("likedPosts")) || [];
+            likedPosts.push(postId);
+            localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+        }
+
+        function removeFromLikedPosts(postId) {
+            let likedPosts = JSON.parse(localStorage.getItem("likedPosts")) || [];
+            likedPosts = likedPosts.filter(id => id !== postId);
+            localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+        }
+    });
+
+</script>
+<!-- End script to handle like and unlike  -->
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
