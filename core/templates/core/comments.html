@@ -252,17 +252,17 @@
                   <div class="card d-flex justify-content-between">
                     <form method="POST">
                       {% csrf_token %}
-                      <div class="form-floating d-flex justify-content-between">
-                        <textarea name="content" class="form-control" placeholder="Leave a comment here" id="floatingTextarea" required></textarea>
-                        <label for="floatingTextarea">Comment on this post</label>
-                        
-                        <button type="submit" class="rounded bg-gradient-dark">
-                            <i class="fa fa-send text-light"></i>
-                          </button> 
+                      <div class="fixed-field-container">
+                          <div class="fixed-field-box">
+                              <div class="fixed-textarea-container">
+                                  <textarea name="content" class="form-control" placeholder="Leave a comment here" id="floatingTextarea" required></textarea>
+                                  <button type="submit" class="rounded bg-gradient-light">
+                                      <i class="fa fa-send text-dark"></i>
+                                  </button>
+                              </div>
+                          </div>
                       </div>
-                      <!-- <div class="">
-                          
-                      </div> -->
+
                     </form>
                   </div>
                 </div>

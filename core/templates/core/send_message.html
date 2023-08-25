@@ -71,6 +71,13 @@
                     {% endif %}
                   {% endwith %}
                 {% endfor %}
+                {% if distinct_senders_count.count > 3 %}
+                    <li>
+                      <div class="d-flex py-1">
+                        <a class="dropdown-item border-radius-md" href="{% url 'inbox' %}">View all....</a>
+                      </div>
+                    </li>
+                  {% endif %}
                 {% else %}
                 <small>no new message</small>
               {% endif %}  
@@ -281,16 +288,15 @@
                   <div class="card">
                     <form method="POST">
                       {% csrf_token %}
-                      <div class="input-group mb-3">
-                        <div class="form-floating">
-                          <textarea name="content" class="form-control custom-width" id="floatingInputGroup1"
-                            placeholder="Comment"></textarea>
-                          <label for="floatingInputGroup1">Send</label>
-                        </div>
-                        <span class="input-group-text">
-                          <button class="bg-gradient-success" type="submit" style="border-radius: 50%;"><i
-                              class="fa fa-send"></i></button>
-                          </i></span>
+                      <div class="fixed-field-container">
+                          <div class="fixed-field-box">
+                              <div class="fixed-textarea-container">
+                                  <textarea name="content" class="form-control" placeholder="Write your message here" id="floatingTextarea" required></textarea>
+                                  <button type="submit" class="rounded bg-gradient-light">
+                                      <i class="fa fa-send text-dark"></i>
+                                  </button>
+                              </div>
+                          </div>
                       </div>
                     </form>
                   </div>
