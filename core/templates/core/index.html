@@ -193,7 +193,7 @@
       </div>
     </nav>
       <!-- End Navbar -->
-
+<!-- suggested users -->
 <div class="container">
     <div class="row">
         <div class="col">
@@ -216,6 +216,7 @@
         </div>
     </div>
 </div>
+<!-- end suggested users -->
 
           <!-- Post feed -->
           {% for post in page_obj %}
@@ -255,7 +256,9 @@
                     
                     <div class="d-flex justify-content-start">
                       <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
-                        <small class="text-dark">{{post.comment_set.count}}</small>
+                        {% if post.comment_set.count >= 1 %}
+                          <small class="text-dark">{{post.comment_set.count}}</small>
+                        {% endif %}
                     </div>    
                       <small class="text-dark">{{post.no_of_likes}} person liked this post</small>
                     
@@ -284,12 +287,18 @@
                           {% if latest_comment %}
                             <div class="d-flex justify-content-start">
                                 {% if latest_comment.content|wordcount > 5 %}
-                                    <small>{{ latest_comment.content|truncate_word:5 }}</small>
+                                <a href="{% url 'profile' latest_comment.user.profile.user %}">
+                                  <img src="{{latest_comment.user.profile.image.url}}" alt="Refused"  class="avatar avatar-sm  me-3 ">
+                                </a>   
+                                <small>{{ latest_comment.content|truncate_word:5 }}</small>
                                     <a class="text-decoration-none" href="{% url 'comment' post.id %}">
                                         <small>read more</small>
                                     </a>
                                 {% else %}
-                                    <small>{{ latest_comment.content }}</small>
+                                <a href="{% url 'profile' latest_comment.user.profile.user %}">
+                                  <img src="{{latest_comment.user.profile.image.url}}" alt="Refused"  class="avatar avatar-sm  me-3 ">
+                                </a>    
+                                <small>{{ latest_comment.content }}</small>
                                 {% endif %}
                             </div>
 
@@ -299,14 +308,20 @@
                                   <small>view {{ post.comment_set.count|add:"-1" }} more comment....</small>
                                 </a>
                               </div>
-                              {% else %}
+                              {% elif post.comment_set.count >= 2 %}
                                 <div class="d-flex justify-content-start">
                                 <a class="text-decoration-none" href="{% url 'comment' post.id %}">
                                   <small>view all {{ post.comment_set.count|add:"-1" }} comments....</small>
                                 </a>
                               </div>
+                              {% else %}
+                                <div class="d-flex justify-content-start">
+                                <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                  <small>view this comment....</small>
+                                </a>
+                              </div>
+                              {% endif %}
                             {% endif %}
-                          {% endif %}
                         {% endwith %}
                       
                 </div>
