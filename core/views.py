@@ -629,3 +629,10 @@ def update_notification_count(request):
         return JsonResponse({"success": True, "notification_count": updated_notification_count})
     else:
         return JsonResponse({"success": False})
+    
+def back_to_page(request):
+    return_to = request.GET.get('return_to', None)
+    if return_to:
+        return redirect(return_to)
+    else:
+        return redirect('home')
