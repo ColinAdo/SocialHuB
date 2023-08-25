@@ -89,6 +89,7 @@ class Message(models.Model):
     content = models.TextField()
     date_sent = models.DateTimeField(default=timezone.now)
     is_deleted = models.BooleanField(default=False, null=True)
+    is_read = models.BooleanField(default=False, null=True)
 
     class Meta:
         get_latest_by = 'date_sent'

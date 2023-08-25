@@ -36,6 +36,7 @@ urlpatterns = [
     path('delete/message/<str:pk>/', views.deletemessage, name='deletemessage'),
 
     path('inbox/', views.inbox, name='inbox'),
+    path("update_notification_count/", views.update_notification_count, name="update_notification_count"),
     path('delete/inbox/<str:message_id>/', views.deleteinbox, name='deleteinbox'),
 
     path('<str:username>/followers-list/', views.followers_list, name='followers-list'),

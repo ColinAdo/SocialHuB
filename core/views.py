@@ -39,7 +39,20 @@ def home(request):
 
     liked_posts = [like.post_id.id for like in request.user.likepost_set.all()]
 
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'liked_posts': liked_posts,
         'is_verified': is_verified,
         'page_obj': page_obj,
@@ -171,7 +184,21 @@ def settings(request):
             user_profile.save()
             messages.success(request, 'Settings updated successfully')
             return redirect('settings')
+    
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'user_profile': user_profile,
         'is_verified': is_verified,
     }
@@ -182,6 +209,12 @@ def uploadpost(request):
     user = request.user
     is_verified = EmailVerification.objects.filter(user=user, is_verified=True).exists()
 
+    # This is for notifications...
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=user,
+        sent_messages__is_deleted=False
+    ).distinct()
+
     if request.method == 'POST':
         author = User.objects.get(username=user)
         file = request.FILES.get('image')
@@ -191,7 +224,22 @@ def uploadpost(request):
         new_post.save()
         messages.success(request, 'You have posted successfully')
         return redirect('home')
-    context = {'is_verified': is_verified}
+    # This is for notification
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
+    context = {
+        'distinct_senders_count': distinct_senders_count,
+        'is_verified': is_verified,
+        'distinct_senders': distinct_senders,
+    }
     return render(request, template, context)
 
 def likePost(request):
@@ -235,7 +283,21 @@ def profile(request, username):
     followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
     following_count = FollowUnFollow.objects.filter(follower=author).count()
     prev_url = request.META.get('HTTP_REFERER')
+
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'posts': posts,
         'prev_url': prev_url,
         'page_obj': page_obj,
@@ -261,7 +323,20 @@ def profile_posts(request, username, post_id):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'posts': posts,
         'post': post,
         'page_obj': page_obj,
@@ -291,6 +366,7 @@ def followunfollow(request):
 
 def search(request):
     template = 'core/search.html'
+    logged_in_user = request.user
     search = request.GET.get('user') if request.GET.get('user') != None else ''
 
     user_profiles = None
@@ -301,8 +377,21 @@ def search(request):
 
         if not users:
             messages.info(request, f'No result for the {search}')
+    
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
 
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'search': search,
         'user_profiles': user_profiles,
     }
@@ -325,7 +414,20 @@ def comments(request, pk):
         )
         return redirect('comment', pk=post.id)
 
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+    
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'comments': comments,
     }
     return render(request, template, context)
@@ -343,7 +445,20 @@ def send_message(request, receiver_username):
         message = Message.objects.create(sender=sender, receiver=receiver, content=content)
         return redirect('message', receiver_username)
 
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=sender,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=sender,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'receiver': receiver,
         'received_messages': received_messages
     }
@@ -354,12 +469,19 @@ def inbox(request):
     logged_in_user = request.user
     is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
 
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
     distinct_senders = User.objects.filter(
         sent_messages__receiver=logged_in_user,
         sent_messages__is_deleted=False
-    ).distinct()
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
 
     context = {
+        'distinct_senders_count': distinct_senders_count,
         'distinct_senders': distinct_senders,
         'is_verified': is_verified,
     }
@@ -379,7 +501,20 @@ def followers_list(request, username):
     followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
     following_count = FollowUnFollow.objects.filter(follower=author).count()
 
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'user_profile': user_profile,
         'followers': followers,
         'following': following,
@@ -403,7 +538,20 @@ def following_list(request, username):
     followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
     following_count = FollowUnFollow.objects.filter(follower=author).count()
 
+    # This is for notifications...
+    distinct_senders_count = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')
+
+    distinct_senders = User.objects.filter(
+        sent_messages__receiver=logged_in_user,
+        sent_messages__is_deleted=False
+    ).distinct().order_by('-sent_messages__date_sent')[:3]
+
     context = {
+        'distinct_senders_count': distinct_senders_count,
+        'distinct_senders': distinct_senders,
         'user_profile': user_profile,
         'users_following': users_following,
         'following': following,
@@ -468,3 +616,16 @@ def deleteinbox(request, message_id):
     message.save()
 
     return redirect('inbox')
+
+def update_notification_count(request):
+    if request.method == "POST" and request.is_ajax() and request.user.is_authenticated:
+        # Mark all unread messages as read for the authenticated user
+        Message.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
+        
+        # Get the updated notification count (unread messages count)
+        updated_notification_count = Message.objects.filter(receiver=request.user, is_read=False).count()
+        
+        # Return the updated count in the JSON response
+        return JsonResponse({"success": True, "notification_count": updated_notification_count})
+    else:
+        return JsonResponse({"success": False})

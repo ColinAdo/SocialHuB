@@ -365,6 +365,23 @@ label {
 
 </script>
 <!-- End script to handle like and unlike  -->
+<script>
+    function hideNotificationCount() {
+        const notificationCountElement = document.getElementById("notification-count");
+
+        if (notificationCountElement) {
+            notificationCountElement.style.display = "none";
+
+            // Send AJAX request to update notification count on the server
+            fetch("{% url 'update_notification_count' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+            });
+        }
+    }
+</script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
