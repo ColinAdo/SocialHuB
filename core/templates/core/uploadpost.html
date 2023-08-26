@@ -192,14 +192,13 @@
             </div>
             <form role="form" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
-              
-              <div class="d-flex justify-content-evenly align-items-center">
+            <div class="d-flex justify-content-evenly align-items-center mt-3">
                 <label for="file-input">
-                  <i class="fa fa-camera"></i>
+                    <ion-icon name="image" class="icon-large"></ion-icon>
                 </label>
                 <input id="file-input" name="image" type="file" required>
-              </div>
-  
+            </div>
+            
               <div class="form-floating">
                 <textarea class="form-control" name="caption" placeholder="Enter your Caption" id="floatingTextarea"></textarea>
                 <label for="floatingTextarea">Add Caption</label>
