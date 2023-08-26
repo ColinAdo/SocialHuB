@@ -125,6 +125,21 @@
                   </a>
                 </li>
                 <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'inbox' %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <ion-icon name="mail"></ion-icon>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Chats</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
                   <a class="dropdown-item border-radius-md" href="{% url 'settings' %}">
                     <div class="d-flex py-1">
                       <div
@@ -185,8 +200,8 @@
               <div class="row justify-content-center">
                 <div class="col-10 col-md-6 text-center">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <a href="{% url 'profile' post.author %}">@{{post.author}}</a>
-                    <span class="text-secondary">{{ post.date_posted }}</span>
+                    <strong><a href="{% url 'profile' post.author %}">@{{post.author}}</a></strong>
+                    <span class="text-dark"><strong>{{ post.date_posted|custom_timesince }}</strong></span>
                   </div>
                   {% if post.get_file_type == 'image' %}
                     <a href="{{post.file.url}}"><img src="{{post.file.url}}" class="img-fluid rounded" alt="post"></a>
@@ -199,43 +214,89 @@
                   {% endif %}
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     {% if post.no_of_likes == 0 %}
-                      <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary"> <small>Like</small></i></a>
-                      <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
-                      <small class="text-primary">No like</small>
-                      <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
+                      <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
+                      <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}"></ion-icon>
+                    </a>
+                      <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
+                      <small class="text-dark">No like</small>
+                      <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
                     {% elif post.no_of_likes == 1 %}
-                      <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary">
-                          <small>Like</small></i></a>
-                      <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
-                          <small class="text-primary">{{post.no_of_likes}} person liked this post</small>
-                      <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
-                    {% else %}
-                        <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary">
-                            <small>Like</small></i></a>
-                        <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
-                            <small class="text-primary" >{{post.no_of_likes}} people liked this post</small>
-                        <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
-                    {% endif %}
-                      </div>
                       <div class="d-flex justify-content-start">
-                        <small>{{ post.caption }}</small>
+                          <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
+                          <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}">
+                          </ion-icon>
+                        </a>
+                        <small class="text-dark">{{post.no_of_likes}}</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-start">
+                      <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
+                        {% if post.comment_set.count >= 1 %}
+                          <small class="text-dark">{{post.comment_set.count}}</small>
+                        {% endif %}
+                    </div>    
+                      <small class="text-dark">{{post.no_of_likes}} person liked this post</small>
+                    
+                          <a href="{{ post.image.url }}" download="{{ post.image.name }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                    {% else %}
+                        <div class="d-flex justify-content-start">
+                      <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
+                        <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}"></ion-icon>
+                      </a>
+                        <small class="text-dark">{{post.no_of_likes}}</small>
+                    </div>
+
+                    <div class="d-flex justify-content-start">
+                        <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
+                        <small class="text-dark">{{post.comment_set.count}}</small>
+                    </div>    
+                      <small class="text-dark" >{{post.no_of_likes}} people liked this post</small>
+                            <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                    {% endif %}
+                  </div>
+                      <div class="d-flex justify-content-start text-dark">
+                        <strong>{{ post.caption }}</strong>
                       </div>
                       
                         {% with latest_comment=post.comment_set.latest %}
                           {% if latest_comment %}
                             <div class="d-flex justify-content-start">
-                              <a class="text-decoration-none" href="{% url 'comment' post.id %}">
-                                {{ latest_comment.content }}
-                              </a>
+                                {% if latest_comment.content|wordcount > 5 %}
+                                <a href="{% url 'profile' latest_comment.user.profile.user %}">
+                                  <img src="{{latest_comment.user.profile.image.url}}" alt="Refused"  class="avatar avatar-sm  me-3 ">
+                                </a>   
+                                <small>{{ latest_comment.content|truncate_word:5 }}</small>
+                                    <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                        <small>read more</small>
+                                    </a>
+                                {% else %}
+                                <a href="{% url 'profile' latest_comment.user.profile.user %}">
+                                  <img src="{{latest_comment.user.profile.image.url}}" alt="Refused"  class="avatar avatar-sm  me-3 ">
+                                </a>    
+                                <small>{{ latest_comment.content }}</small>
+                                {% endif %}
                             </div>
-                            {% if post.comment_set.count > 1 %}
+
+                            {% if post.comment_set.count == 2 %}
                               <div class="d-flex justify-content-start">
                                 <a class="text-decoration-none" href="{% url 'comment' post.id %}">
-                                  view {{ post.comment_set.count|add:"-1" }} more comments
+                                  <small>view {{ post.comment_set.count|add:"-1" }} more comment....</small>
                                 </a>
                               </div>
+                              {% elif post.comment_set.count >= 2 %}
+                                <div class="d-flex justify-content-start">
+                                <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                  <small>view all {{ post.comment_set.count|add:"-1" }} comments....</small>
+                                </a>
+                              </div>
+                              {% else %}
+                                <div class="d-flex justify-content-start">
+                                <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                  <small>view this comment....</small>
+                                </a>
+                              </div>
+                              {% endif %}
                             {% endif %}
-                          {% endif %}
                         {% endwith %}
                 </div>
               </div>
@@ -248,8 +309,8 @@
               <div class="row justify-content-center">
                 <div class="col-10 col-md-6 text-center">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <a href="{% url 'profile' post.author %}">@{{post.author}}</a>
-                    <span class="text-secondary">{{ post.date_posted }}</span>
+                    <strong><a href="{% url 'profile' post.author %}">@{{post.author}}</a></strong>
+                    <span class="text-dark"><strong>{{ post.date_posted|custom_timesince }}</strong></span>
                   </div>
                   {% if post.get_file_type == 'image' %}
                     <a href="{{post.file.url}}"><img src="{{post.file.url}}" class="img-fluid rounded" alt="post"></a>
@@ -262,43 +323,90 @@
                   {% endif %}
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     {% if post.no_of_likes == 0 %}
-                      <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary"> <small>Like</small></i></a>
-                      <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
-                      <small class="text-primary">No like</small>
-                      <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
+                    <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
+                      <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}"></ion-icon>
+                    </a>
+                      <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
+                      <small class="text-dark">No like</small>
+                      <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
                     {% elif post.no_of_likes == 1 %}
-                      <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary">
-                          <small>Like</small></i></a>
-                      <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
-                          <small class="text-primary">{{post.no_of_likes}} person liked this post</small>
-                      <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
+                    
+                    <div class="d-flex justify-content-start">
+                          <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
+                          <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}">
+                          </ion-icon>
+                        </a>
+                        <small class="text-dark">{{post.no_of_likes}}</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-start">
+                      <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
+                        {% if post.comment_set.count >= 1 %}
+                          <small class="text-dark">{{post.comment_set.count}}</small>
+                        {% endif %}
+                    </div>    
+                      <small class="text-dark">{{post.no_of_likes}} person liked this post</small>
+                    
+                          <a href="{{ post.image.url }}" download="{{ post.image.name }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
                     {% else %}
-                        <a href="{% url 'likepost' %}?post_id={{post.id}}"><i class="fa fa-diamond cursor-pointer text-primary">
-                            <small>Like</small></i></a>
-                        <a href="{% url 'comment' post.id %}"><i class="fa fa-comment cursor-pointer text-primary"> <small>Comment</small></i></a>
-                            <small class="text-primary" >{{post.no_of_likes}} people liked this post</small>
-                        <a href="{{post.image.url}}" download><i class="fa fa-download cursor-pointer text-primary"></i></a>
+                    <div class="d-flex justify-content-start">
+                      <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
+                        <ion-icon name="{% if post.id in liked_posts %}heart{% else %}heart-outline{% endif %}"></ion-icon>
+                      </a>
+                        <small class="text-dark">{{post.no_of_likes}}</small>
+                    </div>
+
+                    <div class="d-flex justify-content-start">
+                        <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
+                        <small class="text-dark">{{post.comment_set.count}}</small>
+                    </div>    
+                      <small class="text-dark" >{{post.no_of_likes}} people liked this post</small>
+                            <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
                     {% endif %}
                       </div>
-                      <div class="d-flex justify-content-start">
-                        <small>{{ post.caption }}</small>
+                      <div class="d-flex justify-content-start text-dark">
+                        <strong>{{ post.caption }}</strong>
                       </div>
                       
                         {% with latest_comment=post.comment_set.latest %}
                           {% if latest_comment %}
                             <div class="d-flex justify-content-start">
-                              <a class="text-decoration-none" href="{% url 'comment' post.id %}">
-                                {{ latest_comment.content }}
-                              </a>
+                                {% if latest_comment.content|wordcount > 5 %}
+                                <a href="{% url 'profile' latest_comment.user.profile.user %}">
+                                  <img src="{{latest_comment.user.profile.image.url}}" alt="Refused"  class="avatar avatar-sm  me-3 ">
+                                </a>   
+                                <small>{{ latest_comment.content|truncate_word:5 }}</small>
+                                    <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                        <small>read more</small>
+                                    </a>
+                                {% else %}
+                                <a href="{% url 'profile' latest_comment.user.profile.user %}">
+                                  <img src="{{latest_comment.user.profile.image.url}}" alt="Refused"  class="avatar avatar-sm  me-3 ">
+                                </a>    
+                                <small>{{ latest_comment.content }}</small>
+                                {% endif %}
                             </div>
-                            {% if post.comment_set.count > 1 %}
+
+                            {% if post.comment_set.count == 2 %}
                               <div class="d-flex justify-content-start">
                                 <a class="text-decoration-none" href="{% url 'comment' post.id %}">
-                                  view {{ post.comment_set.count|add:"-1" }} more comments
+                                  <small>view {{ post.comment_set.count|add:"-1" }} more comment....</small>
                                 </a>
                               </div>
+                              {% elif post.comment_set.count >= 2 %}
+                                <div class="d-flex justify-content-start">
+                                <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                  <small>view all {{ post.comment_set.count|add:"-1" }} comments....</small>
+                                </a>
+                              </div>
+                              {% else %}
+                                <div class="d-flex justify-content-start">
+                                <a class="text-decoration-none" href="{% url 'comment' post.id %}">
+                                  <small>view this comment....</small>
+                                </a>
+                              </div>
+                              {% endif %}
                             {% endif %}
-                          {% endif %}
                         {% endwith %}
                       
                 </div>

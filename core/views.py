@@ -319,6 +319,8 @@ def profile_posts(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author=author)
     posts = Post.objects.filter(author=post.author).exclude(id=post_id).order_by('-date_posted')
 
+    liked_posts = [like.post_id.id for like in request.user.likepost_set.all()]
+
     paginator = Paginator(posts, 2)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -335,6 +337,7 @@ def profile_posts(request, username, post_id):
     ).distinct().order_by('-sent_messages__date_sent')[:3]
 
     context = {
+        'liked_posts': liked_posts,
         'distinct_senders_count': distinct_senders_count,
         'distinct_senders': distinct_senders,
         'posts': posts,

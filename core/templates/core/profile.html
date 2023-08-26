@@ -350,12 +350,12 @@
           <div class="p-3 post-item">
             {% if post.get_file_type == 'image' %}
             <a href="{% url 'profileposts' post.author.username post.id %}">
-              <span class="mt-5">Image</span>
+              <span class="mt-5 d-flex justify-content-start mt-1">Image</span>
               <img src="{{post.file.url}}" class="img-fluid rounded" alt="Image 1">
             </a>
             {% elif post.get_file_type == 'video' %}
             <a href="{% url 'profileposts' post.author.username post.id %}">
-              <span class="mt-5">Video</span>
+              <span class="mt-5  d-flex justify-content-start mt-1">Video</span>
               <video class="img-fluid rounded" alt="Image 1">
                 <source src="{{ post.file.url }}" type="video/mp4">
               </video>
