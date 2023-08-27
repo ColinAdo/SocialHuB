@@ -13,3 +13,4 @@
 ## Configure post download
 ## configure on how to make notification count disappear
 ## Add login required to te functions
+## Removing footer from comments.html and send_message.html

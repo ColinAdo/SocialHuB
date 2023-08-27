@@ -192,7 +192,7 @@
   </nav>
   <!-- End Navbar -->
 
-  <!-- Comment feed -->
+  <!-- messages feed -->
   <div class="align-items-start min-vh-25 mb-4 border-radius-lg mt-8">
   </div>
   <div class="container-fluid py-4">
@@ -211,16 +211,16 @@
                   {% if message.receiver.username == receiver.username or message.sender.username == receiver.username %}
                     {% if message.sender.username == request.user.username %}
                   <div class="card mb-4">
+                    {% if message.sender.email == request.user.email %}
                     <!-- delete model popover -->
-                    <div class="d-flex justify-content-end">
-                      <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
-                        data-bs-content="<a href='{% url 'deletemessage' message.id %}' class='text-danger'>Delete</a>">
-                        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-                      </a>
-                    </div>
-                  
-                    <!-- end delete popover -->
-                  
+                      <div class="d-flex justify-content-end">
+                        <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
+                          data-bs-content="<a href='{% url 'deletemessage' message.id %}' class='text-danger'>Delete</a>">
+                          <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                        </a>
+                      </div>
+                      <!-- end delete popover -->
+                    {% endif %}
                   
                     <div class="card-body px-0 pt-0 pb-2 d-flex flex-column">
                       <div class="d-flex px-2 py-1 justify-content-end"> <!-- Added justify-content-end class here -->
@@ -228,7 +228,7 @@
                         <div class="d-flex flex-column justify-content-end">
                           <h6 class="mb-0 text-sm"> You
                             <small>
-                              {{ message.date_sent|timesince }} ago
+                              {{ message.date_sent|custom_timesince }}
                             </small>
                           </h6>
                           <div class="comment-text">
@@ -247,6 +247,7 @@
                   </div>
                   {% else %}
                     <div class="card mb-4">
+                      {% if message.sender.email == request.user.email %}
                       <!-- delete model popover -->
                       <div class="d-flex justify-content-end">
                         <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
@@ -254,9 +255,8 @@
                           <ion-icon name="ellipsis-vertical-outline"></ion-icon>
                         </a>
                       </div>
-                    
                       <!-- end delete popover -->
-                    
+                      {% endif %}
                     
                       <div class="card-body px-0 pt-0 pb-2">
                         <div class="d-flex px-2 py-1">

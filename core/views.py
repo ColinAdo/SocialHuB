@@ -579,18 +579,11 @@ def deletecomment(request, pk):
     return redirect('comment', pk=comment.post.id)
 
 def deletemessage(request, pk):
-    template = 'core/delete.html'
-
     message = get_object_or_404(Message, pk=pk)
 
-    if request.method == 'POST':
-        message.delete()
-        return redirect('message', message.receiver)
-
-    context = {
-        'obj': message,
-    }
-    return render(request, template, context)
+    message.delete()
+    
+    return redirect('message', message.receiver)
 
 def deleteinbox(request, message_id):
     message = Message.objects.get(id=message_id)
