@@ -212,13 +212,14 @@
                   
                     <div class="card mb-4">
                       <!-- delete model popover -->
-                      <div class="d-flex justify-content-end">
-                        <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
-                          data-bs-content="<a href='{% url 'deletecomment' comment.id %}' class='text-danger'>Delete</a>">
-                          <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-                        </a>
-                      </div>
-                    
+                      {% if comment.user.username == request.user.username %}
+                        <div class="d-flex justify-content-end">
+                          <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-html="true"
+                            data-bs-content="<a href='{% url 'deletecomment' comment.id %}' class='text-danger'>Delete</a>">
+                            <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                          </a>
+                        </div>
+                      {% endif %}
                       <!-- end delete popover -->
                     
                     

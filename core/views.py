@@ -571,24 +571,12 @@ def deletepost(request, pk):
     
     return redirect('profile', post.author.username)
 
-
 def deletecomment(request, pk):
-    template = 'core/delete.html'
-
     comment = get_object_or_404(Comment, pk=pk)
 
-    if request.user != comment.user:
-        return HttpResponse('You are not allowed to delete this comment.')
+    comment.delete()
 
-    if request.method == 'POST':
-        post_id = comment.post.id
-        comment.delete()
-        return redirect('comment', pk=post_id)
-
-    context = {
-        'obj': comment,
-    }
-    return render(request, template, context)
+    return redirect('comment', pk=comment.post.id)
 
 def deletemessage(request, pk):
     template = 'core/delete.html'
