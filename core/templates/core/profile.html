@@ -349,13 +349,33 @@
         <div class="col">
           <div class="p-3 post-item">
             {% if post.get_file_type == 'image' %}
+            <div class="d-flex justify-content-between mt-5 mt-1">
+                <span class="">Image</span>
+                {% if post.author.username == request.user.username %}
+                  <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-bs-html="true"
+                      data-bs-content="<a href='{% url 'deletepost' post.id %}' class='text-danger'>Delete</a>">
+                      <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                  </a>
+                {% endif %}
+            </div>
+            
             <a href="{% url 'profileposts' post.author.username post.id %}">
-              <span class="mt-5 d-flex justify-content-start mt-1">Image</span>
               <img src="{{post.file.url}}" class="img-fluid rounded" alt="Image 1">
             </a>
             {% elif post.get_file_type == 'video' %}
+            
+            <div class="d-flex justify-content-between mt-5 mt-1">
+                <span class="">Video</span>
+                {% if post.author.username == request.user.username %}
+                  <a class="delete-trigger" href="#" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-bs-html="true"
+                      data-bs-content="<a href='{% url 'deletepost' post.id %}' class='text-danger'>Delete</a>">
+                      <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                  </a>
+                {% endif %}
+            </div>
             <a href="{% url 'profileposts' post.author.username post.id %}">
-              <span class="mt-5  d-flex justify-content-start mt-1">Video</span>
               <video class="img-fluid rounded" alt="Image 1">
                 <source src="{{ post.file.url }}" type="video/mp4">
               </video>

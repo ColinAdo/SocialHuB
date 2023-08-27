@@ -565,20 +565,12 @@ def following_list(request, username):
     return render(request, template, context)
 
 def deletepost(request, pk):
-    template = 'core/delete.html'
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
 
-    if request.user != post.author:
-        return HttpResponse('You are not allowd to delete this post')
+    post.delete()
     
-    if request.method == 'POST':
-        post.delete()
-        return redirect('home')
+    return redirect('profile', post.author.username)
 
-    context = {
-        'obj': post,
-    }
-    return render(request, template, context)
 
 def deletecomment(request, pk):
     template = 'core/delete.html'

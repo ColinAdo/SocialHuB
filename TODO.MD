@@ -12,3 +12,4 @@
 ## Add message error in each indiividual form
 ## Configure post download
 ## configure on how to make notification count disappear
+## Add login required to te functions
