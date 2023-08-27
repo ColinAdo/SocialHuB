@@ -8,7 +8,17 @@ def custom_timesince(value):
     now = timezone.now()
     diff = now - value
 
-    if diff.days > 0:
+    if diff.days >= 365:
+        years = diff.days // 365
+        if years == 1:
+            return f"{years} year ago"
+        return f"{years} years ago"
+    elif diff.days >= 30:
+        months = diff.days // 30
+        if months == 1:
+            return f"{months} month ago"
+        return f"{months} months ago"
+    elif diff.days > 0:
         if diff.days == 1:
             return f"{diff.days} day ago"
         return f"{diff.days} days ago"
