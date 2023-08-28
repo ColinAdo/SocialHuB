@@ -105,15 +105,6 @@ label {
 
 <body class="g-sidenav-show">
     <!-- {% include 'nav.html' %} -->
-    <div class="">
-        {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-success text-center" role="alert">
-                <small class="text-white">{{message}}</small>
-              </div>
-            {% endfor %}
-        {% endif %} 
-    </div>
 
     {% block content %}
         

@@ -194,6 +194,14 @@
       <!-- End Navbar -->
 <!-- suggested users -->
 <div class="container mt-8">
+  {% if messages %}
+  <div class="alert alert-dark text-center d-flex justify-content-center" role="alert">
+    <small class="text-white">{% include 'core/alert.html' %}&nbsp;</small>
+    <div class="circle bg-gradient-success">
+      <span class="number text-dark"><i class="ni ni-check-bold"></i></span>
+    </div>
+  </div>
+  {% endif %}
     <div class="row">
         <div class="col">
           <h5 class="text-uppercase navbar-brand">Suggested Users To Follow</h5>
@@ -216,7 +224,7 @@
     </div>
 </div>
 <!-- end suggested users -->
-
+          
           <!-- Post feed -->
           {% for post in page_obj %}
             <div class="container mt-4">

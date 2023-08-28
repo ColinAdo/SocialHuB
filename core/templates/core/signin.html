@@ -15,6 +15,13 @@
               <h5>Signin To SocialHuB</h5>
               <h6>LOGO</h6>
             </div>
+            {% if messages %}
+            <div class="container">
+                <div class="alert alert-danger text-center" role="alert">
+                  <small class="text-white">{% include 'core/alert.html' %}</small>
+                </div>
+            </div>
+            {% endif %}
             
             <div class="card-body">
               <form role="form" method="POST">

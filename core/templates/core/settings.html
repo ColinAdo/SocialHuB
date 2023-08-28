@@ -177,8 +177,19 @@
     </nav>
     <!-- End Navbar -->
 
+
+    {% if messages %}
+    <div class="container mt-8 mb-0">
+        <div class="alert alert-dark text-center d-flex justify-content-center" role="alert">
+          <small class="text-white">{% include 'core/alert.html' %}&nbsp;</small>
+          <div class="circle bg-gradient-success">
+            <span class="number text-dark"><i class="ni ni-check-bold"></i></span>
+          </div>
+        </div>
+    </div>
+    {% endif %}
       <!-- form feed -->
-      <div class="align-items-start min-vh-25 mb-4 border-radius-lg mt-8">
+      <div class="align-items-start min-vh-25 mb-4 border-radius-lg mt-7">
       </div>
       <div class="container-fluid py-4">
         <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">

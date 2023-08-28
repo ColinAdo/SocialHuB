@@ -172,7 +172,6 @@ def settings(request):
             user_profile.location = location
             user_profile.save()
             messages.success(request, 'Settings updated successfully')
-            return redirect('settings')
         else:
             image = request.FILES['image']
             bio = request.POST['bio']
@@ -183,7 +182,6 @@ def settings(request):
             user_profile.location = location
             user_profile.save()
             messages.success(request, 'Settings updated successfully')
-            return redirect('settings')
     
     # This is for notifications...
     distinct_senders_count = User.objects.filter(
@@ -568,6 +566,7 @@ def deletepost(request, pk):
     post = get_object_or_404(Post, id=pk)
 
     post.delete()
+    messages.success(request, 'You have deleted the posted successfully')
     
     return redirect('profile', post.author.username)
 

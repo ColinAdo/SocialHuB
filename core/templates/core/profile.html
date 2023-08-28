@@ -336,6 +336,16 @@
       </div>
     </nav>
     <!-- End Navbar -->
+    {% if messages %}
+    <div class="container">
+        <div class="alert alert-dark text-center d-flex justify-content-center" role="alert">
+          <small class="text-white">{% include 'core/alert.html' %}&nbsp;</small>
+          <div class="circle bg-gradient-success">
+            <span class="number text-dark"><i class="ni ni-check-bold"></i></span>
+          </div>
+        </div>
+    </div>
+    {% endif %}
     <span class="m-5">
       <span>{{posts_count}} Post{{posts_count|pluralize}}</span>
     </span>
