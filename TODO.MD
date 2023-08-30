@@ -14,3 +14,4 @@
 ## configure on how to make notification count disappear
 ## Add login required to te functions
 ## Removing footer from comments.html and send_message.html
+## Work on settings.html to add urls and select option for profession and country and city
