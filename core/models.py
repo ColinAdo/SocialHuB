@@ -9,9 +9,14 @@ import magic
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.CharField(max_length=200)
+    career = models.CharField(max_length=200)
     image = models.ImageField(default='default.png', upload_to='profile_pics')
     location = models.CharField(max_length=200)
+    website_link = models.URLField(max_length=250, null=True, blank=True)
+    github_link = models.URLField(max_length=250, null=True, blank=True)
+    x_link = models.URLField(max_length=250, null=True, blank=True)
+    instagram_link = models.URLField(max_length=250, null=True, blank=True)
+    linkedin_link = models.URLField(max_length=250, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} profile"

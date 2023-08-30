@@ -161,25 +161,80 @@ def settings(request):
     template = 'core/settings.html'
     user = request.user
     is_verified = EmailVerification.objects.filter(user=user, is_verified=True).exists()
+
+    location_options = [
+        {'value': 'Algeria - Algiers', 'label': 'Algeria - Algiers'},
+        {'value': 'Egypt - Cairo', 'label': 'Egypt - Cairo'},
+        {'value': 'Ethiopia - Addis Ababa', 'label': 'Ethiopia - Addis Ababa'},
+        {'value': 'Kenya - Nairobi', 'label': 'Kenya - Nairobi'},
+        {'value': 'Nigeria - Abuja', 'label': 'Nigeria - Abuja'},
+        {'value': 'South Africa - Pretoria', 'label': 'South Africa - Pretoria'},
+        {'value': 'Sudan - Khartoum', 'label': 'Sudan - Khartoum'},
+        {'value': 'Tanzania - Dodoma', 'label': 'Tanzania - Dodoma'},
+        {'value': 'Uganda - Kampala', 'label': 'Uganda - Kampala'},
+        {'value': 'Zimbabwe - Harare', 'label': 'Zimbabwe - Harare'},
+        {'value': 'China - Beijing', 'label': 'China - Beijing'},
+        {'value': 'India - New Delhi', 'label': 'India - New Delhi'},
+        {'value': 'Indonesia - Jakarta', 'label': 'Indonesia - Jakarta'},
+        {'value': 'Japan - Tokyo', 'label': 'Japan - Tokyo'},
+        {'value': 'Kazakhstan - Nur-Sultan', 'label': 'Kazakhstan - Nur-Sultan'},
+        {'value': 'Malaysia - Kuala Lumpur', 'label': 'Malaysia - Kuala Lumpur'},
+        {'value': 'Pakistan - Islamabad', 'label': 'Pakistan - Islamabad'},
+        {'value': 'Philippines - Manila', 'label': 'Philippines - Manila'},
+    ]
+    career_options = [
+        {'value': 'Accountant', 'label': 'Accountant'},
+        {'value': 'Marketing Manager', 'label': 'Marketing Manager'},
+        {'value': 'Human Resources Specialist', 'label': 'Human Resources Specialist'},
+        {'value': 'Financial Analyst', 'label': 'Financial Analyst'},
+        {'value': 'Project Manager', 'label': 'Project Manager'},
+        {'value': 'Sales Representative', 'label': 'Sales Representative'},
+        {'value': 'Software Engineer', 'label': 'Software Engineer'},
+        {'value': 'Data Scientist', 'label': 'Data Scientist'},
+        {'value': 'Cybersecurity Analyst', 'label': 'Cybersecurity Analyst'},
+        {'value': 'UX/UI Designer', 'label': 'UX/UI Designer'},
+    ]
     user_profile = Profile.objects.get(user=user)
     if request.method == 'POST':
         if request.FILES.get('image') is None:
-            bio = request.POST['bio']
+            career = request.POST['career']
             image = user_profile.image
             location = request.POST['location']
+            website_link = request.POST['website_link']
+            github_link = request.POST['github_link']
+            x_link = request.POST['x_link']
+            instagram_link = request.POST['instagram_link']
+            linkedin_link = request.POST['linkedin_link']
 
-            user_profile.bio = bio
+            user_profile.image = image
+            user_profile.career = career
             user_profile.location = location
+            user_profile.website_link = website_link
+            user_profile.github_link = github_link
+            user_profile.x_link = x_link
+            user_profile.instagram_link = instagram_link
+            user_profile.linkedin_link = linkedin_link
             user_profile.save()
             messages.success(request, 'Settings updated successfully')
         else:
             image = request.FILES['image']
-            bio = request.POST['bio']
+            career = request.POST['career']
             location = request.POST['location']
+            location = request.POST['location']
+            website_link = request.POST['website_link']
+            github_link = request.POST['github_link']
+            x_link = request.POST['x_link']
+            instagram_link = request.POST['instagram_link']
+            linkedin_link = request.POST['linkedin_link']
 
-            user_profile.bio = bio
             user_profile.image = image
+            user_profile.career = career
             user_profile.location = location
+            user_profile.website_link = website_link
+            user_profile.github_link = github_link
+            user_profile.x_link = x_link
+            user_profile.instagram_link = instagram_link
+            user_profile.linkedin_link = linkedin_link
             user_profile.save()
             messages.success(request, 'Settings updated successfully')
     
@@ -199,6 +254,8 @@ def settings(request):
         'distinct_senders': distinct_senders,
         'user_profile': user_profile,
         'is_verified': is_verified,
+        'location_options': location_options,
+        'career_options': career_options,
     }
     return render(request, template, context)
 

@@ -203,40 +203,51 @@
                 </div>
                 <form role="form" action="" method="POST" enctype="multipart/form-data">
                   {% csrf_token %}
-                  <div class="d-flex justify-content-evenly align-items-center">
-                    <label for="file-input">
-                      <i class="fa fa-camera"></i>
-                    </label>
-                    <input id="file-input" type="file" name="image">
+                  <div class="d-flex justify-content-evenly align-items-center mt-3">
+                      <label for="file-input">
+                          <ion-icon name="image" class="icon-large"></ion-icon>
+                      </label>
+                      <input id="file-input" name="image" type="file">
                   </div>
       
                   <div class="form-floating mb-3">
-                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" type="text" name="bio">{{user_profile.bio}}</textarea>
-                    <label for="floatingTextarea">Bio</label>
+                      <select class="form-select" aria-label="Default select example" name="career">
+                          <option value="" selected disabled>Select your career</option>
+                          {% for option in career_options %}
+                              <option value="{{ option.value }}" {% if option.value == user_profile.career %}selected{% endif %}>{{ option.label }}</option>
+                          {% endfor %}
+                      </select>
+                      <label for="floatingSelect">Career</label>
                   </div>
+
                   <div class="form-floating mb-3">
-                    <input type="text" name="location" value="{{user_profile.location}}" class="form-control" id="floatingInputDisabled" placeholder="Location">
-                    <label for="floatingInputDisabled">Location</label>
+                      <select class="form-select" aria-label="Default select example" name="location">
+                          <option value="" selected disabled>Select your location</option>
+                          {% for option in location_options %}
+                              <option value="{{ option.value }}" {% if option.value == user_profile.location %}selected{% endif %}>{{ option.label }}</option>
+                          {% endfor %}
+                      </select>
+                      <label for="floatingSelect">Location</label>
                   </div>
-      
+
                   <div class="form-floating mb-3">
-                    <input type="url" class="form-control" id="floatingInputDisabled" placeholder="Personal Link">
+                    <input type="url" name="website_link" value="{{user_profile.website_link}}" class="form-control" id="floatingInputDisabled" placeholder="Personal Link">
                     <label for="floatingInputDisabled">Personal Website Link</label>
                   </div>
                   <div class="form-floating mb-3">
-                    <input type="url" class="form-control" id="floatingInputDisabled" placeholder="Facebook Link">
+                    <input type="url" name="github_link" value="{{user_profile.github_link}}" class="form-control" id="floatingInputDisabled" placeholder="Facebook Link">
                     <label for="floatingInputDisabled">Github Link</label>
                   </div>
                   <div class="form-floating mb-3">
-                    <input type="url" class="form-control" id="floatingInputDisabled" placeholder="Twitter Link">
+                    <input type="url" name="x_link" value="{{user_profile.x_link}}" class="form-control" id="floatingInputDisabled" placeholder="Twitter Link">
                     <label for="floatingInputDisabled">X Link</label>
                   </div>
                   <div class="form-floating mb-3">
-                    <input type="url" class="form-control" id="floatingInputDisabled" placeholder="Instagram Link">
+                    <input type="url" name="instagram_link" value="{{user_profile.instagram_link}}" class="form-control" id="floatingInputDisabled" placeholder="Instagram Link">
                     <label for="floatingInputDisabled">Instagram Link</label>
                   </div>
                   <div class="form-floating mb-3">
-                    <input type="url" class="form-control" id="floatingInputDisabled" placeholder="Linkedin Link">
+                    <input type="url" name="linkedin_link" value="{{user_profile.linkedin_link}}" class="form-control" id="floatingInputDisabled" placeholder="Linkedin Link">
                     <label for="floatingInputDisabled">Linkedin Link</label>
                   </div>
                   <div class="text-center">
