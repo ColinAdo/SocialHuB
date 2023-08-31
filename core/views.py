@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
@@ -8,11 +9,13 @@ from django.core.mail import send_mail
 from socialHub.settings import EMAIL_HOST_USER
 
 from django.core.paginator import Paginator
+from django.contrib.auth.views import PasswordChangeView
 
 from .models import Profile, Post, LikePost, FollowUnFollow, Comment, Message, EmailVerification
 
 import random
 
+@login_required(login_url='signin')
 def home(request):
     template = 'core/index.html'
     logged_in_user = request.user
@@ -157,6 +160,7 @@ def signout(request):
     messages.info(request, 'You have Just Signed-out')
     return redirect('signin')
 
+@login_required(login_url='signin')
 def settings(request):
     template = 'core/settings.html'
     user = request.user
@@ -259,6 +263,7 @@ def settings(request):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def uploadpost(request):
     template = 'core/uploadpost.html'
     user = request.user
@@ -297,6 +302,7 @@ def uploadpost(request):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def likePost(request):
     logged_in_user = request.user
     user = User.objects.get(username=logged_in_user)
@@ -320,6 +326,7 @@ def likePost(request):
     response_data = {'liked': filter_likes is None, 'post_id': post_id}
     return JsonResponse(response_data)
 
+@login_required(login_url='signin')
 def profile(request, username):
     template = 'core/profile.html'
     logged_in_user = request.user
@@ -365,6 +372,7 @@ def profile(request, username):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def profile_posts(request, username, post_id):
     template = 'core/profileposts.html'
     logged_in_user = request.user
@@ -402,6 +410,7 @@ def profile_posts(request, username, post_id):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def followunfollow(request):
     logged_in_user = request.user
     if request.method == 'POST':
@@ -422,6 +431,7 @@ def followunfollow(request):
     prev_url = request.META.get('HTTP_REFERER')
     return redirect(prev_url)
 
+@login_required(login_url='signin')
 def search(request):
     template = 'core/search.html'
     logged_in_user = request.user
@@ -455,6 +465,7 @@ def search(request):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def comments(request, pk):
     template = 'core/comments.html'
     logged_in_user = request.user
@@ -490,6 +501,7 @@ def comments(request, pk):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def send_message(request, receiver_username):
     template = 'core/send_message.html'
     sender = request.user
@@ -522,6 +534,7 @@ def send_message(request, receiver_username):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def inbox(request):
     template = 'core/inbox.html'
     logged_in_user = request.user
@@ -545,6 +558,7 @@ def inbox(request):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def followers_list(request, username):
     template = 'core/followers_following_list.html'
     logged_in_user = request.user
@@ -582,6 +596,7 @@ def followers_list(request, username):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def following_list(request, username):
     template = 'core/followers_following_list.html'
     logged_in_user = request.user
@@ -619,6 +634,7 @@ def following_list(request, username):
     }
     return render(request, template, context)
 
+@login_required(login_url='signin')
 def deletepost(request, pk):
     post = get_object_or_404(Post, id=pk)
 
@@ -627,6 +643,7 @@ def deletepost(request, pk):
     
     return redirect('profile', post.author.username)
 
+@login_required(login_url='signin')
 def deletecomment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
@@ -634,6 +651,7 @@ def deletecomment(request, pk):
 
     return redirect('comment', pk=comment.post.id)
 
+@login_required(login_url='signin')
 def deletemessage(request, pk):
     message = get_object_or_404(Message, pk=pk)
 
@@ -641,6 +659,7 @@ def deletemessage(request, pk):
     
     return redirect('message', message.receiver)
 
+@login_required(login_url='signin')
 def deleteinbox(request, message_id):
     message = Message.objects.get(id=message_id)
 
@@ -649,6 +668,7 @@ def deleteinbox(request, message_id):
 
     return redirect('inbox')
 
+@login_required(login_url='signin')
 def update_notification_count(request):
     if request.method == "POST" and request.is_ajax() and request.user.is_authenticated:
         # Mark all unread messages as read for the authenticated user
@@ -661,10 +681,16 @@ def update_notification_count(request):
         return JsonResponse({"success": True, "notification_count": updated_notification_count})
     else:
         return JsonResponse({"success": False})
-    
+
+@login_required(login_url='signin')    
 def back_to_page(request):
     return_to = request.GET.get('return_to', None)
     if return_to:
         return redirect(return_to)
     else:
         return redirect('home')
+    
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'core/password_change.html'
+
+custom_password_change = login_required(CustomPasswordChangeView.as_view(), login_url="signin")
