@@ -29,7 +29,10 @@ def home(request):
         Q(author=logged_in_user) | Q(author__in=user_being_followed)
     ).order_by('-date_posted')
 
-    paginator = Paginator(posts, 2)  
+    shuffled_post = list(posts)
+    random.shuffle(shuffled_post)
+
+    paginator = Paginator(shuffled_post, 2)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -382,9 +385,12 @@ def profile_posts(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author=author)
     posts = Post.objects.filter(author=post.author).exclude(id=post_id).order_by('-date_posted')
 
+    shuffed_posts = list(posts)
+    random.shuffle(shuffed_posts)
+
     liked_posts = [like.post_id.id for like in request.user.likepost_set.all()]
 
-    paginator = Paginator(posts, 2)
+    paginator = Paginator(shuffed_posts, 2)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
