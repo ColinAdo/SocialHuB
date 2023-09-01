@@ -52,8 +52,13 @@ def home(request):
         sent_messages__receiver=logged_in_user,
         sent_messages__is_deleted=False
     ).distinct().order_by('-sent_messages__date_sent')[:3]
+    
+    author_followers_count = {}
+    for post in page_obj:
+        author_followers_count[post.author.username] = FollowUnFollow.objects.filter(user_being_followed=post.author).count()
 
     context = {
+        'author_followers_count': author_followers_count,
         'distinct_senders_count': distinct_senders_count,
         'distinct_senders': distinct_senders,
         'liked_posts': liked_posts,
@@ -337,10 +342,6 @@ def profile(request, username):
     posts_count = posts.count()
     user_profile = Profile.objects.get(user=author)
 
-    paginator = Paginator(posts, 2)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
     followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
     following_count = FollowUnFollow.objects.filter(follower=author).count()
@@ -362,7 +363,6 @@ def profile(request, username):
         'distinct_senders': distinct_senders,
         'posts': posts,
         'prev_url': prev_url,
-        'page_obj': page_obj,
         'user_profile': user_profile,
         'following': following,
         'followers_count': followers_count,

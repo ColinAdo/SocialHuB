@@ -43,3 +43,7 @@ def truncate_word(value, num_words):
         return value
     truncated_words = ' '.join(words[:num_words]) +'.....'
     return truncated_words
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)

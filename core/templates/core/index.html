@@ -230,7 +230,13 @@
               <div class="row justify-content-center">
                 <div class="col-10 col-md-6 text-center">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong><a href="{% url 'profile' post.author %}">@{{post.author}}</a></strong>
+                    {% with author_followers=author_followers_count|get_item:post.author.username %}
+                      {% if author_followers > 4 %}
+                        <strong><a href="{% url 'profile' post.author %}">@{{post.author}} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"></a></strong>
+                      {% else %}
+                        <strong><a href="{% url 'profile' post.author %}">@{{post.author}} </a></strong>
+                      {% endif %}
+                    {% endwith %}
                     <span class="text-dark"><strong>{{ post.date_posted|custom_timesince }}</strong></span>
                   </div>
                   {% if post.get_file_type == 'image' %}
@@ -279,7 +285,9 @@
 
                     <div class="d-flex justify-content-start">
                         <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
-                        <small class="text-dark">{{post.comment_set.count}}</small>
+                        {% if post.comment_set.count >= 1 %}
+                          <small class="text-dark">{{post.comment_set.count}}</small>
+                        {% endif %}
                     </div>    
                       <small class="text-dark" >{{post.no_of_likes}} people liked this post</small>
                             <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
