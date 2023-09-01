@@ -29,12 +29,9 @@ def home(request):
         Q(author=logged_in_user) | Q(author__in=user_being_followed)
     ).order_by('-date_posted')
 
-    shuffled_post = list(posts)
-    random.shuffle(shuffled_post)
+    page_obj = list(posts)
+    random.shuffle(page_obj)
 
-    paginator = Paginator(shuffled_post, 2)  
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
 
     # Getting suggested users
     suggested_users = User.objects.exclude(pk=logged_in_user.pk).exclude(followers__follower=logged_in_user)
@@ -385,14 +382,10 @@ def profile_posts(request, username, post_id):
     post = get_object_or_404(Post, id=post_id, author=author)
     posts = Post.objects.filter(author=post.author).exclude(id=post_id).order_by('-date_posted')
 
-    shuffed_posts = list(posts)
-    random.shuffle(shuffed_posts)
+    page_obj = list(posts)
+    random.shuffle(page_obj)
 
     liked_posts = [like.post_id.id for like in request.user.likepost_set.all()]
-
-    paginator = Paginator(shuffed_posts, 2)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
 
     # This is for notifications...
     distinct_senders_count = User.objects.filter(
