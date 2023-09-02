@@ -16,7 +16,11 @@
       </a>
     </div>
     <div class="d-flex justify-content-evenly">
-      <h6 class="fs-4">{{user_profile.user.username}} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"> </h6>
+      {% if followers_count > 4 %}
+        <h6 class="fs-4">{{user_profile.user.username}} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"> </h6>
+      {% else %}
+        <h6 class="fs-4">{{user_profile.user.username}} </h6>
+      {% endif %}
     </div>
 
     <div class="d-flex justify-content-evenly mt-1 text-center">
