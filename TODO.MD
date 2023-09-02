@@ -6,3 +6,4 @@
 ## clean the code.....
 ## Configure why the career and the loation can't be empty
 ## Add active indicator to profiles followera_following.html
+## Add active_users.html 
