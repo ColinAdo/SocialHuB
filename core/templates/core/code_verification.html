@@ -4,6 +4,16 @@
 {% block content %}
 
   <main class="main-content">
+    <div class="container">
+      {% if messages %}
+        <div class="alert alert-dark text-center d-flex justify-content-center" role="alert">
+          <small class="text-white">{% include 'core/alert.html' %}&nbsp;</small>
+          <div class="circle bg-gradient-success">
+            <span class="number text-dark"><i class="ni ni-check-bold"></i></span>
+          </div>
+        </div>
+        {% endif %}
+    </div>
     <div class="page-header align-items-start mt-0 pb-11 m-3 border-radius-lg">
     </div>
     <div class="container">

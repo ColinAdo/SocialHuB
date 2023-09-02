@@ -114,7 +114,7 @@ def signup(request):
                 if user is not None:
                     login(request, user)
 
-                messages.success(request, 'User created successfully. Please check your email for the verification code.')
+                messages.success(request, 'Please check your email for the verification code.')
                 return redirect('code_verification')
         else:
             messages.info(request, 'Password mismatch')
@@ -134,7 +134,7 @@ def codeVerification(request):
             verification.is_verified = True
             verification.save()
 
-            messages.success(request, "Your email verification is successful")
+            messages.success(request, "Your email is verified successfully")
             return redirect('home')
         except EmailVerification.DoesNotExist:
             messages.error(request, "Invalid verification code, try again!")
