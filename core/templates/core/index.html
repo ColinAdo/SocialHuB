@@ -256,7 +256,7 @@
                     </a>
                       <a href="{% url 'comment' post.id %}"><ion-icon name="chatbubble-outline"></ion-icon></a>
                       <small class="text-dark">No like</small>
-                      <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                      <a href="{% url 'download_file' post.id %}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
                     {% elif post.no_of_likes == 1 %}
                     
                     <div class="d-flex justify-content-start">
@@ -275,7 +275,7 @@
                     </div>    
                       <small class="text-dark">{{post.no_of_likes}} person liked this post</small>
                     
-                          <a href="{{ post.image.url }}" download="{{ post.image.name }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                          <a href="{% url 'download_file' post.id %}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
                     {% else %}
                     <div class="d-flex justify-content-start">
                       <a href="{% url 'likepost' %}?post_id={{ post.id }}" class="like-button" data-post-id="{{ post.id }}">
@@ -291,7 +291,7 @@
                         {% endif %}
                     </div>    
                       <small class="text-dark" >{{post.no_of_likes}} people liked this post</small>
-                            <a href="{{post.image.url}}" download="{{ post.image.url }}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
+                            <a href="{% url 'download_file' post.id %}"><ion-icon name="arrow-down-sharp"></ion-icon></a>
                     {% endif %}
                       </div>
                       <div class="d-flex justify-content-start text-dark">

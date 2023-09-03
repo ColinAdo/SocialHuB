@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseBadRequest, HttpResponse, JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse, FileResponse
 from django.db.models import Q
 from django.core.mail import send_mail
 from socialHub.settings import EMAIL_HOST_USER
@@ -693,3 +693,11 @@ class CustomPasswordChangeView(PasswordChangeView):
     template_name = 'core/password_change.html'
 
 custom_password_change = login_required(CustomPasswordChangeView.as_view(), login_url="signin")
+
+def download_file(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    file_path = post.file.path  
+    
+    response = FileResponse(open(file_path, 'rb'))
+    response['Content-Disposition'] = f'attachment; filename="{post.file.name}"'
+    return response
