@@ -213,7 +213,13 @@
                                 <img src="{{ profile.image.url }}" alt="{{ profile.user }}" class="img-fluid rounded-circle" style="width: 80px; height: 80px;">
                             </a>
                             <strong>
-                              <a href="{% url 'profile' profile.user %}">{{ profile.user }}</a>
+                              {% with user_followers=profile.user.followers.all|length %}
+                                  {% if user_followers > 4 %}
+                                      <a href="{% url 'profile' profile.user %}">{{ profile.user }} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"></a>
+                                  {% else %}
+                                      <a href="{% url 'profile' profile.user %}">{{ profile.user }}</a>
+                                  {% endif %}
+                              {% endwith %}
                             </strong>
                         </div>
                     </div>
