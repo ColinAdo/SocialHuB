@@ -364,10 +364,10 @@
                     {% for follower in followers %}
                         <tr>
                             <td>
-                                <div class="d-flex px-2 py-1">
-                                    <a href="{% url 'profile' follower.follower.username %}">
+                                <div class="d-flex px-2 py-1 align-items-center">
+                                    <a href="{% url 'profile' follower.follower.username %}" class="d-flex align-items-center">
                                         <img src="{{follower.follower.profile.image.url}}" class="avatar avatar-lg me-3 mx-auto p-2">
-                                        <div class="d-flex flex-column justify-content-center">
+                                        <div class="d-flex flex-column">
                                             <h6 class="mb-0 text-sm">
                                                 {{ follower.follower.username }}
                                                 {% with follower_count=follower_counts_dict|get_item:follower.follower.username %}
@@ -382,6 +382,7 @@
                                         </div>
                                     </a>
                                 </div>
+
                             </td>
                             <td class="align-middle text-center text-sm m-3">
                                 <a href="{% url 'profile' follower.follower.username %}">
@@ -396,10 +397,10 @@
     {% for followed_user in users_following %}
         <tr>
             <td>
-                <div class="d-flex px-2 py-1">
-                    <a href="{% url 'profile' followed_user.user_being_followed.username %}">
+                <div class="d-flex px-2 py-1 align-items-center">
+                    <a href="{% url 'profile' followed_user.user_being_followed.username %}" class="d-flex align-items-center">
                         <img src="{{ followed_user.user_being_followed.profile.image.url }}" class="avatar avatar-lg me-3 mx-auto p-2">
-                        <div class="d-flex flex-column justify-content-center">
+                        <div class="d-flex flex-column">
                             <h6 class="mb-0 text-sm">
                                 {{ followed_user.user_being_followed.username }}
                                 {% with user_count=followings_count|get_item:followed_user.user_being_followed.username %}
