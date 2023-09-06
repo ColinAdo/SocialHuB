@@ -569,7 +569,12 @@ def followers_list(request, username):
     followers = FollowUnFollow.objects.filter(user_being_followed=author)
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
 
-    followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
+    # Create a dictionary to store follower counts for each user
+    follower_counts = {}
+    for follower in followers:
+        follower_counts[follower.follower.username] = FollowUnFollow.objects.filter(user_being_followed=follower.follower).count()
+
+    followers_count = len(follower_counts)
     following_count = FollowUnFollow.objects.filter(follower=author).count()
 
     # This is for notifications...
@@ -584,6 +589,7 @@ def followers_list(request, username):
     ).distinct().order_by('-sent_messages__date_sent')[:3]
 
     context = {
+        'follower_counts_dict': follower_counts,
         'distinct_senders_count': distinct_senders_count,
         'distinct_senders': distinct_senders,
         'user_profile': user_profile,
@@ -607,8 +613,14 @@ def following_list(request, username):
     users_following = FollowUnFollow.objects.filter(follower=author)
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
 
+    followings_count = {}  # Initialize an empty dictionary
+
+    followings_count = {}
+    for user in users_following:
+        followings_count[user.user_being_followed.username] = FollowUnFollow.objects.filter(user_being_followed=user.user_being_followed).count()
+
+    following_count = len(followings_count)
     followers_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
-    following_count = FollowUnFollow.objects.filter(follower=author).count()
 
     # This is for notifications...
     distinct_senders_count = User.objects.filter(
@@ -622,6 +634,7 @@ def following_list(request, username):
     ).distinct().order_by('-sent_messages__date_sent')[:3]
 
     context = {
+        'followings_count': followings_count,
         'distinct_senders_count': distinct_senders_count,
         'distinct_senders': distinct_senders,
         'user_profile': user_profile,

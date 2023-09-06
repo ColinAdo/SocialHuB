@@ -15,7 +15,11 @@
       </a>
     </div>
     <div class="d-flex justify-content-evenly">
-      <h4 class="fs-4 text-uppercase">{{user_profile.user.username}}</h4>
+      {% if followers_count > 4 %}
+        <h6 class="fs-4">{{user_profile.user.username}} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"> </h6>
+      {% else %}
+        <h6 class="fs-4">{{user_profile.user.username}} </h6>
+      {% endif %}
     </div>
 
     <div class="d-flex justify-content-evenly mt-1 text-center">
@@ -359,55 +363,70 @@
                   {% if followers %}
                     {% for follower in followers %}
                         <tr>
-                          <td>
-                            <div class="d-flex px-2 py-1">
-                              <a href="{% url 'profile' follower.follower.username %}">
-                                <img src="{{follower.follower.profile.image.url}}" class="avatar avatar-lg me-3 mx-auto p-2">
-
-                                <div class="d-flex flex-column justify-content-center">
-                                  <h6 class="mb-0 text-sm">{{follower.follower.username}}</h6>
-                                  {% if follower.follower.profile.bio %}
-                                    <p class="text-xs text-secondary mb-0">{{follower.follower.profile.bio}}</p>
-                                  {% endif %}
+                            <td>
+                                <div class="d-flex px-2 py-1">
+                                    <a href="{% url 'profile' follower.follower.username %}">
+                                        <img src="{{follower.follower.profile.image.url}}" class="avatar avatar-lg me-3 mx-auto p-2">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <h6 class="mb-0 text-sm">
+                                                {{ follower.follower.username }}
+                                                {% with follower_count=follower_counts_dict|get_item:follower.follower.username %}
+                                                    {% if follower_count|default:0 > 4 %}
+                                                        <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;">
+                                                    {% endif %}
+                                                {% endwith %}
+                                            </h6>
+                                            {% if follower.follower.profile.career %}
+                                                <p class="text-xs text-secondary mb-0">{{ follower.follower.profile.career }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="align-middle text-center text-sm m-3">
+                                <a href="{% url 'profile' follower.follower.username %}">
+                                    <span class="badge badge-sm bg-gradient-primary">View Profile</span>
                                 </a>
-                            </div>
-                          </div>
-                          </td>
-
-                          <td class="align-middle text-center text-sm m-3">
-                            <a href="{% url 'profile' follower.follower.username %}">
-                              <span class="badge badge-sm bg-gradient-primary">View Profile</span>
-                            </a>
                             </td>
                         </tr>
                     {% endfor %}
-                  {% endif %}
+                {% endif %}
 
-            {% if users_following %}
-              {% for followed_user in users_following %}
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <a href="{% url 'profile' followed_user.user_being_followed.username %}">
-                            <img src="{{followed_user.user_being_followed.profile.image.url}}" class="avatar avatar-lg me-3 mx-auto p-2">
-
-                            <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">{{ followed_user.user_being_followed.username }}</h6>
-                              {% if followed_user.user_being_followed.profile.bio %}
-                                <p class="text-xs text-secondary mb-0">{{followed_user.user_being_followed.profile.bio}}</p>
-                              {% endif %}    
-                            </a>
-                              </div>
+{% if users_following %}
+    {% for followed_user in users_following %}
+        <tr>
+            <td>
+                <div class="d-flex px-2 py-1">
+                    <a href="{% url 'profile' followed_user.user_being_followed.username %}">
+                        <img src="{{ followed_user.user_being_followed.profile.image.url }}" class="avatar avatar-lg me-3 mx-auto p-2">
+                        <div class="d-flex flex-column justify-content-center">
+                            <h6 class="mb-0 text-sm">
+                                {{ followed_user.user_being_followed.username }}
+                                {% with user_count=followings_count|get_item:followed_user.user_being_followed.username %}
+                                    {% if user_count|default:0 > 4 %}
+                                        <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;">
+                                    {% endif %}
+                                {% endwith %}
+                            </h6>
+                            {% if followed_user.user_being_followed.profile.career %}
+                                <p class="text-xs text-secondary mb-0">{{ followed_user.user_being_followed.profile.career }}</p>
+                            {% endif %}
                         </div>
-                        </td>
-                        <td class="align-middle text-center text-sm">
-                          <a href="{% url 'profile' followed_user.user_being_followed.username %}">
-                            <span class="badge badge-sm bg-gradient-primary">View Profile</span>
-                          </a>
-                        </td>
-                  </tr>
-              {% endfor %}
-            {% endif %}
+                    </a>
+                </div>
+            </td>
+            <td class="align-middle text-center text-sm">
+                <a href="{% url 'profile' followed_user.user_being_followed.username %}">
+                    <span class="badge badge-sm bg-gradient-primary">View Profile</span>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+{% endif %}
+
+
+
+
   </tbody>
   </table>
   </div>
