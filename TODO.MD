@@ -4,4 +4,3 @@
 ## clean the code.....
 ## Configure why the career and the loation can't be empty
 ## Add active_users.html 
-## Add disappearing time for alerts

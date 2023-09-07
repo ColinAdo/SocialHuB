@@ -198,7 +198,12 @@
               <div class="row justify-content-center">
                 <div class="col-10 col-md-6 text-center">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong><a href="{% url 'profile' post.author %}">@{{post.author}} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"> </a></strong>
+                    {% if author_follower_count > 4 %}
+                        <strong><a href="{% url 'profile' post.author %}">@{{ post.author }} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"></a></strong>
+                    {% else %}
+                        <strong><a href="{% url 'profile' post.author %}">@{{ post.author }}</a></strong>
+                    {% endif %}
+
                     <span class="text-dark"><strong>{{ post.date_posted|custom_timesince }}</strong></span>
                   </div>
                   {% if post.get_file_type == 'image' %}

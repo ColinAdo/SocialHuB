@@ -386,6 +386,7 @@ def profile_posts(request, username, post_id):
     random.shuffle(page_obj)
 
     liked_posts = [like.post_id.id for like in request.user.likepost_set.all()]
+    author_follower_count = FollowUnFollow.objects.filter(user_being_followed=author).count()
 
     # This is for notifications...
     distinct_senders_count = User.objects.filter(
@@ -399,6 +400,7 @@ def profile_posts(request, username, post_id):
     ).distinct().order_by('-sent_messages__date_sent')[:3]
 
     context = {
+        'author_follower_count': author_follower_count,
         'liked_posts': liked_posts,
         'distinct_senders_count': distinct_senders_count,
         'distinct_senders': distinct_senders,
