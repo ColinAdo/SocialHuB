@@ -1,17 +1,256 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-    <h1>Active Users You Are Following</h1>
-    
-    <div class="active-users-list">
-        {% for user in active_users_following %}
-            <div class="user-profile">
-                <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-image">
-                <h3>{{ user.username }}</h3>
-                <!-- Add more profile information here -->
+
+<main class="main-content position-relative border-radius-lg ">
+  <!-- Navbar -->
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl navbar-fixed" id="navbarBlur" data-scroll="false">
+    <div class="container-fluid py-1 px-3 navbar-content">
+        <a class="navbar-brand" href="#" onclick="goBack()">
+            <i class="ni ni-bold-left"></i>
+        </a>
+
+        <!-- User Profile and Notification (Far Right) -->
+        <ul class="navbar-nav">
+          <div class="ms-md-auto pe-md-3 d-flex mt-3 align-items-center">
+            <div class="input-group">
+              <form action="{% url 'search' %}" method="GET">
+                {% csrf_token %}
+
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                  </span>
+                  <input type="text" name="user" class="form-control" placeholder="Search here...." required
+                    aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+              </form>
             </div>
-        {% empty %}
-            <p>You are not following any active users at the moment.</p>
-        {% endfor %}
+          </div>
+          <!-- Notification begins -->
+            <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <a href="javascript:;" class="nav-link text-white p-0" id="dropdownMenuButton message-link"
+   data-bs-toggle="dropdown" aria-expanded="false" onclick="hideNotificationCount()">
+                <span class="bell-icon m-3">
+                  <i class="fa fa-bell cursor-pointer text-dark"></i>
+                  {% if distinct_senders.count >= 1 %}
+                    <small id="notification-count" class="text-danger fw-bolder">{{distinct_senders_count.count}}</small>
+                  {% endif %}
+                </span>
+              </a>
+    
+              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+              {% if distinct_senders %}  
+                {% for sender in distinct_senders %}
+                  {% with messages=sender.sent_messages.all %}
+                    {% if messages %}
+                      {% with latest_message=messages.latest %}
+                        <li class="mb-2">
+                          <a class="dropdown-item border-radius-md" href="{% url 'message' sender.username %}">
+                            <div class="d-flex py-1">
+                              <div class="my-auto">
+                                <img src="{{ sender.profile.image.url }}" class="avatar avatar-sm  me-3 ">
+                              </div>
+                              <div class="d-flex flex-column justify-content-center">
+                                <h6 class="text-sm font-weight-normal mb-1">
+                                  <span class="font-weight-bold">New message</span> from {{ sender.username }}
+                                </h6>
+                                <p class="text-xs text-secondary mb-0">
+                                  <i class="fa fa-clock me-1"></i>
+                                  {{ latest_message.date_sent|custom_timesince }}
+                                </p>
+                              </div>
+                            </div>
+                          </a>
+                        </li>
+                      {% endwith %}
+                    {% endif %}
+                  {% endwith %}
+                {% endfor %}
+                {% else %}
+                <small>no new message</small>
+              {% endif %}  
+              </ul>
+            </li>
+            <!-- Notification end -->
+
+            <!-- User Profile -->
+            <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <a href="javascript:;" class="nav-link text-white p-0 position-relative" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{ request.user.profile.image.url }}" class="avatar avatar-sm me-3">
+                <span class="active-indicator"></span>
+              </a>
+    
+              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4" aria-labelledby="dropdownMenuButton">
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'home' %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <ion-icon name="home"></ion-icon>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Home</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'profile' request.user.username %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="ni ni-single-02 text-dark text-sm opacity-10"></i>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Profile</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'activeusers' %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center text-success me-2 d-flex align-items-center justify-content-center">
+                        <ion-icon name="time"></ion-icon>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Active Users</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'inbox' %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <ion-icon name="mail"></ion-icon>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Chats</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'settings' %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <ion-icon name="settings"></ion-icon>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Settings</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'password_change' %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <ion-icon name="key"></ion-icon>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Change Password</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md" href="{% url 'signout' %}">
+                    <div class="d-flex py-1">
+                      <div
+                        class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <ion-icon name="log-in"></ion-icon>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold text-dark">Logout</span>
+                        </h6>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+    
+              </ul>
+            </li>
+            <!-- end user profile -->
+        </ul>
+      </div>
     </div>
+  </nav>
+  <!-- End Navbar -->
+
+  <!-- search feed -->
+  <div class="align-items-start min-vh-25 mt-5 mb-4 border-radius-lg mt-8">
+  </div>
+  <div class="container-fluid py-4 ">
+    <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
+      <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
+        <div class="card z-index-0">
+
+          <div class="card-body">
+            <div class="container-fluid py-4">
+              <div class="row">
+                <div class="col-12">
+                  <div class="card mb-4">
+                    <div class="card-header pb-0">
+                      <h6>Active Users</h6>
+                    </div>
+                    <div class="card-body px-0 pt-0 pb-2">
+                      <div class="table-responsive p-0">
+                        <table class="table table-hover align-items-center mb-0">
+                          <thead>
+                            
+                          </thead>
+                          <tbody> 
+                            {% for user in active_users_following %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <a href="{% url 'message' user.username %}" class="d-flex align-items-center">
+                                                    <img src="{{ user.profile.image.url }}" alt="Profile Img" class="avatar-lg avatar-circle me-3">
+                                                    <h6 class="mb-0 text-sm">{{ user.username }}</h6>
+                                                </a>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                            {% empty %}
+                                <small>There's now active users at the moment.</small>
+                            {% endfor %}
+            </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <!-- search feed end -->
+</main>
+
 {% endblock %}
