@@ -225,25 +225,27 @@
                           </thead>
                           <tbody>
                             {% if user_profiles %}
-                            {% for profile in user_profiles %}
-                            <tr>
-                                    <td>
-                                      
-                                      <div class="d-flex px-2 py-1">
-                                        <a href="{% url 'profile' profile.user %}">
-                                          <img src="{{ profile.image.url }}" class="avatar avatar-lg me-3 mx-auto p-2">
-
-                                          <div class="d-flex flex-column justify-content-center">
-                                              <h6 class="mb-0 text-sm">{{ profile.user }}</h6>
-                                              <p class="text-xs text-secondary mb-0">{{ profile.bio }}</p>
-                                          </a>
-                                          </div>
-                                      </div>
-                                      
-                                    </td>
-                            </tr>
-                            {% endfor %}
+    {% for profile in user_profiles %}
+        <tr>
+            <td>
+                <div class="d-flex px-2 py-1 align-items-center">
+                    <a href="{% url 'profile' profile.user %}" class="d-flex align-items-center">
+                        <img src="{{ profile.image.url }}" class="avatar avatar-lg me-3 mx-auto p-2">
+                        <div class="d-flex flex-column justify-content-center">
+                            {% if profile.follower_count > 4 %}
+                                <h6 class="mb-0 text-sm">{{ profile.user }} <img src="{% static 'img/verify.png' %}" class="img-fluid rounded-circle" style="width: 15px; height: 15px;"></h6>
+                            {% else %}
+                                <h6 class="mb-0 text-sm">{{ profile.user }}</h6>
                             {% endif %}
+                            <p class="text-xs text-secondary mb-0">{{ profile.career }}</p>
+                        </div>
+                    </a>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+{% endif %}
+
           
             </tbody>
             </table>

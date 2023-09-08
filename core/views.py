@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest, JsonResponse, FileResponse
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core.mail import send_mail
 from django.utils import timezone
 from socialHub.settings import EMAIL_HOST_USER
@@ -444,7 +444,9 @@ def search(request):
 
     if search:
         users = User.objects.filter(username__icontains=search)
-        user_profiles = Profile.objects.filter(user__in=users)
+        user_profiles = Profile.objects.filter(user__in=users).annotate(
+            follower_count=Count('user__followers')
+        )
 
         if not users:
             messages.info(request, f'No result for the {search}')
