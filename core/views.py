@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseBadRequest, JsonResponse, FileResponse
 from django.db.models import Q
 from django.core.mail import send_mail
+from django.utils import timezone
 from socialHub.settings import EMAIL_HOST_USER
 
 from django.core.paginator import Paginator
@@ -703,7 +705,32 @@ def back_to_page(request):
         return redirect(return_to)
     else:
         return redirect('home')
-    
+
+@login_required(login_url='signin') 
+def active_users_following(request):
+    template = 'core/active_users.html'
+    logged_in_user = request.user
+
+    users_following = FollowUnFollow.objects.filter(follower=logged_in_user).values('user_being_followed__id')
+
+    # Getting the list of active session IDs
+    active_session_ids = []
+
+    for session in Session.objects.filter(expire_date__gte=timezone.now()):
+        data = session.get_decoded()
+        if '_auth_user_id' in data:
+            user_id = data['_auth_user_id']
+            active_session_ids.append(user_id)
+
+    # Get the active users that the logged-in user is following
+    active_users_following = User.objects.filter(Q(id__in=active_session_ids) & Q(id__in=users_following))
+
+    context = {
+        'active_users_following': active_users_following,
+    }
+
+    return render(request, template, context)
+
 class CustomPasswordChangeView(PasswordChangeView):
     template_name = 'core/password_change.html'
 

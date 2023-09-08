@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Active Users You Are Following</h1>
+    
+    <div class="active-users-list">
+        {% for user in active_users_following %}
+            <div class="user-profile">
+                <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-image">
+                <h3>{{ user.username }}</h3>
+                <!-- Add more profile information here -->
+            </div>
+        {% empty %}
+            <p>You are not following any active users at the moment.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
