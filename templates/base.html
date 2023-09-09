@@ -28,6 +28,7 @@
       crossorigin="anonymous"
     ></script>
     <link href="{% static 'css/nucleo-svg.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/index.css' %}" rel="stylesheet" />
     <!-- CSS Files -->
     <link
       id="pagestyle"
@@ -38,97 +39,10 @@
    <link id="pagestyle" href="{% static 'css/argon-dashboard.css' %}" rel="stylesheet" />
     <!-- jquery cdn -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <style>
-      .bell-icon {
-        position: relative;
-      }
-
-      .bell-icon small {
-        position: absolute;
-        top: -11px;
-        right: 0;
-      }
-
-      .circle {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  overflow: hidden;
-}
-
-.number {
-  white-space: nowrap;
-}
-
-  .post-item {
-    height: 300px; /* Adjust the height as needed */
-    overflow: hidden;
-  }
-
-  .post-item img,
-  .post-item video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  input[type="file"] {
-  display: none;
-}
-
-label {
-  cursor: pointer;
-}
-.icon-large {
-        font-size: 1.5rem; 
-    }
-.navbar-fixed {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        background-color: #fff; /* Adjust background color as needed */
-        padding: 15px; /* Adjust padding as needed */
-    }
-
-    .navbar-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-  .active-indicator {
-    width: 10px;
-    height: 10px;
-    background-color: rgba(58, 236, 27, 0.958);
-    border-radius: 50%;
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin-top: 25px; /* Adjust the margin as needed */
-    margin-right: 14px; /* Adjust the margin as needed */
-  }
-    .avatar-circle {
-        border: 2px solid #00ff00; /* Green border color */
-        border-radius: 50%; /* Makes the element circular */
-        padding: 2px; /* Adjust the padding as needed */
-    }
-
-    .avatar-lg {
-        width: 80px; /* Set the desired size for the image */
-        height: 80px; /* Set the desired size for the image */
-    }
-
-</style>
+    
   </head>
 
 <body class="g-sidenav-show">
-    <!-- {% include 'nav.html' %} -->
 
     {% block content %}
         
