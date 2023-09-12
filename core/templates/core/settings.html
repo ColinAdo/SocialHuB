@@ -226,7 +226,7 @@
                   </div>
       
                   <div class="form-floating mb-3">
-                      <select class="form-select" aria-label="Default select example" name="career">
+                      <select class="form-select" aria-label="Default select example" name="career" required>
                           <option value="" selected disabled>Select your career</option>
                           {% for option in career_options %}
                               <option value="{{ option.value }}" {% if option.value == user_profile.career %}selected{% endif %}>{{ option.label }}</option>
@@ -236,7 +236,7 @@
                   </div>
 
                   <div class="form-floating mb-3">
-                      <select class="form-select" aria-label="Default select example" name="location">
+                      <select class="form-select" aria-label="Default select example" name="location" required>
                           <option value="" selected disabled>Select your location</option>
                           {% for option in location_options %}
                               <option value="{{ option.value }}" {% if option.value == user_profile.location %}selected{% endif %}>{{ option.label }}</option>

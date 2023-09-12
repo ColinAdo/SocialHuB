@@ -1,3 +1,2 @@
 ## configure on how to make notification count disappear
 ## clean the code.....
-## Configure why the career and the loation can't be empty
