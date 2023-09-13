@@ -42,6 +42,5 @@ urlpatterns = [
     path('<str:username>/followers-list/', views.followers_list, name='followers-list'),
     path('<str:username>/following-list/', views.following_list, name='following-list'),
     path('active-users/', views.active_users_following, name='activeusers'),
-    path('back-to-page/', views.back_to_page, name='back_to_page'),
     path('download/<uuid:post_id>/', views.download_file, name='download_file'),
 ]

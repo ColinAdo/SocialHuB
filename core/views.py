@@ -10,7 +10,6 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from socialHub.settings import EMAIL_HOST_USER
 
-from django.core.paginator import Paginator
 from django.contrib.auth.views import PasswordChangeView
 
 from .models import Profile, Post, LikePost, FollowUnFollow, Comment, Message, EmailVerification
@@ -24,7 +23,6 @@ def home(request):
 
     is_verified = EmailVerification.objects.filter(user=logged_in_user, is_verified=True).exists()
 
-    # Getting posts of the logged in user and their followers
     followers = FollowUnFollow.objects.filter(follower=logged_in_user)
     user_being_followed = [f.user_being_followed for f in followers]
     posts = Post.objects.filter(
@@ -90,10 +88,8 @@ def signup(request):
                 user = User.objects.create_user(username=username, email=email, password=password1)
                 user.save()
 
-                # Generate verification code
                 code = str(random.randint(100000, 999999))
 
-                # Saving the verification code to the EmailVerification model
                 verification = EmailVerification.objects.create(user=user, email=email, code=code)
                 verification.save()
 
@@ -111,7 +107,6 @@ def signup(request):
                 profile = Profile.objects.create(user=new_user)
                 profile.save()
 
-                # loggin the user
                 user = authenticate(request, username=username, password=password1)
                 if user is not None:
                     login(request, user)
@@ -276,7 +271,6 @@ def uploadpost(request):
     user = request.user
     is_verified = EmailVerification.objects.filter(user=user, is_verified=True).exists()
 
-    # This is for notifications...
     distinct_senders = User.objects.filter(
         sent_messages__receiver=user,
         sent_messages__is_deleted=False
@@ -291,6 +285,7 @@ def uploadpost(request):
         new_post.save()
         messages.success(request, 'You have posted successfully')
         return redirect('home')
+    
     # This is for notification
     distinct_senders_count = User.objects.filter(
         sent_messages__receiver=user,
@@ -575,7 +570,6 @@ def followers_list(request, username):
     followers = FollowUnFollow.objects.filter(user_being_followed=author)
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
 
-    # Create a dictionary to store follower counts for each user
     follower_counts = {}
     for follower in followers:
         follower_counts[follower.follower.username] = FollowUnFollow.objects.filter(user_being_followed=follower.follower).count()
@@ -619,7 +613,7 @@ def following_list(request, username):
     users_following = FollowUnFollow.objects.filter(follower=author)
     following = FollowUnFollow.objects.filter(follower=logged_in_user, user_being_followed=author).first()
 
-    followings_count = {}  # Initialize an empty dictionary
+    followings_count = {}  
 
     followings_count = {}
     for user in users_following:
@@ -689,24 +683,13 @@ def deleteinbox(request, message_id):
 @login_required(login_url='signin')
 def update_notification_count(request):
     if request.method == "POST" and request.is_ajax() and request.user.is_authenticated:
-        # Mark all unread messages as read for the authenticated user
         Message.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
         
-        # Get the updated notification count (unread messages count)
         updated_notification_count = Message.objects.filter(receiver=request.user, is_read=False).count()
         
-        # Return the updated count in the JSON response
         return JsonResponse({"success": True, "notification_count": updated_notification_count})
     else:
         return JsonResponse({"success": False})
-
-@login_required(login_url='signin')    
-def back_to_page(request):
-    return_to = request.GET.get('return_to', None)
-    if return_to:
-        return redirect(return_to)
-    else:
-        return redirect('home')
 
 @login_required(login_url='signin') 
 def active_users_following(request):
@@ -715,7 +698,6 @@ def active_users_following(request):
 
     users_following = FollowUnFollow.objects.filter(follower=logged_in_user).values('user_being_followed__id')
 
-    # Getting the list of active session IDs
     active_session_ids = []
 
     for session in Session.objects.filter(expire_date__gte=timezone.now()):
@@ -724,7 +706,6 @@ def active_users_following(request):
             user_id = data['_auth_user_id']
             active_session_ids.append(user_id)
 
-    # Get the active users that the logged-in user is following
     active_users_following = User.objects.filter(Q(id__in=active_session_ids) & Q(id__in=users_following))
 
     context = {
