@@ -3,6 +3,8 @@ core/migrations/*
 core/__pycache__/*
 core/templatetags/__pycache__/*
 socialHub/__pycache__/*
+test/__pycache__/*
+test/core/__pycache__/*
 
 # Django #
 *.log
