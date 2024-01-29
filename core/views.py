@@ -37,7 +37,7 @@ def home(request):
     suggested_users = User.objects.exclude(pk=logged_in_user.pk).exclude(followers__follower=logged_in_user)
     suggested_users = list(suggested_users) 
     random.shuffle(suggested_users) 
-    suggested_users = suggested_users[:5]
+    suggested_users = suggested_users[:4]
     suggested_users_profiles = Profile.objects.filter(user__in=suggested_users)
 
     liked_posts = [like.post_id.id for like in request.user.likepost_set.all()]
