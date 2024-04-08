@@ -16,4 +16,3 @@ class TestHomeViewTestCase(TestCase):
         response = self.client.get(self.home_url)
 
         self.assertEquals(response.status_code, 302)
-        # self.assertTemplateUsed(response, 'core/index.html')
