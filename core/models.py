@@ -41,16 +41,6 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.author.username} posts"
-    
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-
-    #     if self.file.path.endswith('.jpg') or self.file.path.endswith('.png'):
-    #         img = Image.open(self.file.path)
-    #         if img.height > 300 or img.width > 300:
-    #             output_size = (300, 300)
-    #             img.thumbnail(output_size)
-    #             img.save(self.file.path)
 
     def get_file_type(self):
         file_path = self.file.path
